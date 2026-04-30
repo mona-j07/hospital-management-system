@@ -1,0 +1,13 @@
+# Dependencies
+node_modules/
+venv/
+.env
+
+# Build outputs
+dist/
+build/
+*.exe
+
+# OS generated files
+.DS_Store
+Thumbs.db

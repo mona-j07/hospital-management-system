@@ -1,0 +1,100 @@
+{
+  "surgeries": [
+    {
+      "id": 5,
+      "patient": 105,
+      "surgeon": "Dr.A",
+      "type": "Heart_Transplant",
+      "duration": 200,
+      "ot": 1,
+      "start_slot": 0,
+      "end_slot": 7
+    },
+    {
+      "id": 6,
+      "patient": 255,
+      "surgeon": "Dr.B",
+      "type": "mb",
+      "duration": 60,
+      "ot": 2,
+      "start_slot": 0,
+      "end_slot": 2
+    },
+    {
+      "id": 1,
+      "patient": 101,
+      "surgeon": "Dr.A",
+      "type": "Bypass",
+      "duration": 120,
+      "ot": 1,
+      "start_slot": 7,
+      "end_slot": 11
+    },
+    {
+      "id": 3,
+      "patient": 103,
+      "surgeon": "Dr.A",
+      "type": "Appendectomy",
+      "duration": 60,
+      "ot": 1,
+      "start_slot": 11,
+      "end_slot": 13
+    },
+    {
+      "id": 4,
+      "patient": 104,
+      "surgeon": "Dr.B",
+      "type": "TumorRemoval",
+      "duration": 150,
+      "ot": 2,
+      "start_slot": 2,
+      "end_slot": 7
+    },
+    {
+      "id": 2,
+      "patient": 102,
+      "surgeon": "Dr.B",
+      "type": "Fracture",
+      "duration": 90,
+      "ot": 2,
+      "start_slot": 7,
+      "end_slot": 10
+    }
+  ],
+  "surgeons": [
+    {
+      "id": 1,
+      "name": "Dr.A",
+      "surgeries_count": 3,
+      "worked_hours": 6,
+      "salary": 3000.00
+    },
+    {
+      "id": 2,
+      "name": "Dr.B",
+      "surgeries_count": 3,
+      "worked_hours": 4,
+      "salary": 1800.00
+    }
+  ],
+  "nurses": [
+    {
+      "id": 1,
+      "name": "NurseX",
+      "worked_hours": 0,
+      "salary": 0.00
+    },
+    {
+      "id": 2,
+      "name": "NurseY",
+      "worked_hours": 0,
+      "salary": 0.00
+    },
+    {
+      "id": 3,
+      "name": "NurseZ",
+      "worked_hours": 0,
+      "salary": 0.00
+    }
+  ]
+}

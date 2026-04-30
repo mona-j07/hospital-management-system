@@ -1,0 +1,120 @@
+{
+  "surgeries": [
+    {
+      "id": 1,
+      "type": "Bypass",
+      "patient_id": 101,
+      "surgeon_id": 1,
+      "required_nurses": 2,
+      "duration": 120,
+      "equipment": "Standard",
+      "priority": 2
+    },
+    {
+      "id": 2,
+      "type": "Fracture",
+      "patient_id": 102,
+      "surgeon_id": 2,
+      "required_nurses": 1,
+      "duration": 90,
+      "equipment": "Standard",
+      "priority": 3
+    },
+    {
+      "id": 3,
+      "type": "Appendectomy",
+      "patient_id": 103,
+      "surgeon_id": 1,
+      "required_nurses": 2,
+      "duration": 60,
+      "equipment": "Standard",
+      "priority": 2
+    },
+    {
+      "id": 4,
+      "type": "TumorRemoval",
+      "patient_id": 104,
+      "surgeon_id": 2,
+      "required_nurses": 2,
+      "duration": 150,
+      "equipment": "Standard",
+      "priority": 2
+    },
+    {
+      "type": "Heart Transplant",
+      "patient_id": 105,
+      "surgeon_id": 1,
+      "required_nurses": 2,
+      "duration": 200,
+      "equipment": "Standard",
+      "priority": 1,
+      "id": 5
+    },
+    {
+      "type": "mb",
+      "patient_id": 255,
+      "surgeon_id": 2,
+      "required_nurses": 2,
+      "duration": 60,
+      "equipment": "Ventilator",
+      "priority": 1,
+      "id": 6
+    }
+  ],
+  "ots": [
+    {
+      "id": 1,
+      "equipment": "Standard",
+      "is_available": 1
+    },
+    {
+      "id": 2,
+      "equipment": "Standard",
+      "is_available": 1
+    },
+    {
+      "id": 3,
+      "equipment": "Ventilator",
+      "is_available": 1
+    }
+  ],
+  "surgeons": [
+    {
+      "id": 1,
+      "name": "Dr.A",
+      "specialization": "Cardiology",
+      "max_hours": 8,
+      "rate": 500
+    },
+    {
+      "id": 2,
+      "name": "Dr.B",
+      "specialization": "Orthopedics",
+      "max_hours": 8,
+      "rate": 450
+    }
+  ],
+  "nurses": [
+    {
+      "id": 1,
+      "name": "NurseX",
+      "specialization": "General",
+      "max_hours": 8,
+      "rate": 100
+    },
+    {
+      "id": 2,
+      "name": "NurseY",
+      "specialization": "General",
+      "max_hours": 8,
+      "rate": 100
+    },
+    {
+      "id": 3,
+      "name": "NurseZ",
+      "specialization": "General",
+      "max_hours": 8,
+      "rate": 100
+    }
+  ]
+}
