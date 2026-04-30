@@ -3,7 +3,7 @@ import { Activity, Users, Stethoscope, Download, AlertCircle, Clock, Plus, Edit2
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
+const API_URL = import.meta.env.VITE_API_URL || 'https://hospital-management-system-my4q.onrender.com/api';
 
 const App = () => {
   const [data, setData] = useState(null);
