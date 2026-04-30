@@ -116,6 +116,23 @@ app.delete('/api/surgeries/:id', (req, res) => {
     res.json(resultData);
 });
 
+app.put('/api/ots/:id', (req, res) => {
+    const id = parseInt(req.params.id);
+    const { is_available } = req.body;
+    const rawData = fs.readFileSync(DATA_FILE, 'utf-8');
+    const db = JSON.parse(rawData);
+    
+    const index = db.ots.findIndex(o => o.id === id);
+    if (index !== -1) {
+        db.ots[index].is_available = is_available ? 1 : 0;
+        fs.writeFileSync(DATA_FILE, JSON.stringify(db, null, 2));
+    }
+    
+    const resultData = generateScheduleAndGetData();
+    res.json(resultData);
+});
+
+
 // Start the server
 const PORT = 3000;
 app.listen(PORT, () => {

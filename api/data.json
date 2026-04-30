@@ -41,16 +41,6 @@
       "priority": 2
     },
     {
-      "type": "Heart Transplant",
-      "patient_id": 105,
-      "surgeon_id": 1,
-      "required_nurses": 2,
-      "duration": 200,
-      "equipment": "Standard",
-      "priority": 1,
-      "id": 5
-    },
-    {
       "type": "mb",
       "patient_id": 255,
       "surgeon_id": 2,
@@ -59,6 +49,26 @@
       "equipment": "Ventilator",
       "priority": 1,
       "id": 6
+    },
+    {
+      "type": "emergency",
+      "patient_id": 2510457,
+      "surgeon_id": 1,
+      "required_nurses": 2,
+      "duration": 60,
+      "equipment": "Standard",
+      "priority": 2,
+      "id": 7
+    },
+    {
+      "type": "surgery 111",
+      "patient_id": 111,
+      "surgeon_id": 1,
+      "required_nurses": 2,
+      "duration": 60,
+      "equipment": "Standard",
+      "priority": 2,
+      "id": 8
     }
   ],
   "ots": [

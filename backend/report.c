@@ -26,6 +26,18 @@ void export_json() {
         fprintf(f, "      \"type\": \"%s\",\n", surgeries[i].type);
         fprintf(f, "      \"duration\": %d,\n", surgeries[i].duration);
         fprintf(f, "      \"ot\": %d,\n", surgeries[i].assigned_ot);
+        fprintf(f, "      \"assigned_nurses\": [");
+        for(int k=0; k < surgeries[i].num_assigned_nurses; k++) {
+            char nurse_name[50] = "Unknown";
+            for (int n_idx = 0; n_idx < num_nurses; n_idx++) {
+                if (nurses[n_idx].id == surgeries[i].assigned_nurses[k]) {
+                    snprintf(nurse_name, sizeof(nurse_name), "%s", nurses[n_idx].name);
+                    break;
+                }
+            }
+            fprintf(f, "\"%s\"%s", nurse_name, (k == surgeries[i].num_assigned_nurses - 1) ? "" : ", ");
+        }
+        fprintf(f, "],\n");
         fprintf(f, "      \"start_slot\": %d,\n", surgeries[i].start_slot);
         fprintf(f, "      \"end_slot\": %d\n", surgeries[i].end_slot);
         fprintf(f, "    }%s\n", (i == num_surgeries - 1) ? "" : ",");
@@ -59,6 +71,15 @@ void export_json() {
         fprintf(f, "      \"worked_hours\": %d,\n", nurses[i].worked_hours);
         fprintf(f, "      \"salary\": %.2f\n", calculate_salary(nurses[i].worked_hours, nurses[i].rate, 0));
         fprintf(f, "    }%s\n", (i == num_nurses - 1) ? "" : ",");
+    }
+    fprintf(f, "  ],\n");
+
+    fprintf(f, "  \"ots\": [\n");
+    for (int i = 0; i < num_ots; i++) {
+        fprintf(f, "    {\n");
+        fprintf(f, "      \"id\": %d,\n", ots[i].id);
+        fprintf(f, "      \"is_available\": %s\n", ots[i].is_available ? "true" : "false");
+        fprintf(f, "    }%s\n", (i == num_ots - 1) ? "" : ",");
     }
     fprintf(f, "  ]\n");
 

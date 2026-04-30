@@ -14,6 +14,8 @@ typedef struct {
     char equipment[50];
     int priority; // 1 = highest
     int assigned_ot;
+    int assigned_nurses[10];
+    int num_assigned_nurses;
     int start_slot; // 0 to MAX_SLOTS - 1 (assume 30 min slots, 0 = 00:00)
     int end_slot;
 } Surgery;

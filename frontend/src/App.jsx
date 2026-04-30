@@ -11,6 +11,7 @@ const App = () => {
   const [loading, setLoading] = useState(true);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedSurgery, setSelectedSurgery] = useState(null);
   const [editingId, setEditingId] = useState(null);
   const [formData, setFormData] = useState({
     type: '',
@@ -109,6 +110,21 @@ const App = () => {
     }
   };
 
+  const toggleOTMaintenance = async (id, currentStatus) => {
+    try {
+      const isCurrentlyAvail = currentStatus === 'true' || currentStatus === true;
+      const res = await fetch(`${API_URL}/ots/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ is_available: !isCurrentlyAvail })
+      });
+      const newData = await res.json();
+      setData(newData);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   const formatTime = (slot) => {
     if (slot === -1) return 'N/A';
     const hours = Math.floor(slot / 2);
@@ -199,7 +215,7 @@ const App = () => {
               {data.surgeries?.map(s => (
                 <tr key={s.id}>
                   <td>#{s.id}</td>
-                  <td>PT-{s.patient || s.patient_id}</td>
+                  <td><button className="btn" style={{padding: '4px', background: 'transparent', color: 'var(--primary)', textDecoration: 'underline'}} onClick={() => setSelectedSurgery(s)}>PT-{s.patient || s.patient_id}</button></td>
                   <td>{s.type} {s.priority === 1 && <span className="badge priority-1">Emergency</span>}</td>
                   <td>{s.surgeon}</td>
                   <td><Clock size={14} style={{display: 'inline', marginRight: 4}}/>{s.duration}m</td>
@@ -228,6 +244,7 @@ const App = () => {
           <div className={`nav-item ${activeTab === 'dashboard' ? 'active' : ''}`} onClick={() => setActiveTab('dashboard')}>Dashboard</div>
           <div className={`nav-item ${activeTab === 'surgeons' ? 'active' : ''}`} onClick={() => setActiveTab('surgeons')}>Surgeons</div>
           <div className={`nav-item ${activeTab === 'nurses' ? 'active' : ''}`} onClick={() => setActiveTab('nurses')}>Nurses</div>
+          <div className={`nav-item ${activeTab === 'ots' ? 'active' : ''}`} onClick={() => setActiveTab('ots')}>OTs</div>
           <div className={`nav-item ${activeTab === 'patients' ? 'active' : ''}`} onClick={() => setActiveTab('patients')}>Patients</div>
         </div>
         <button className="btn btn-primary" onClick={generatePDF}><Download size={18} /> Export Reports</button>
@@ -263,12 +280,52 @@ const App = () => {
             <table>
               <thead><tr><th>Patient ID</th><th>Surgery Type</th><th>Assigned OT</th><th>Duration</th></tr></thead>
               <tbody>
-                {data.surgeries?.map(s => <tr key={s.id}><td>PT-{s.patient || s.patient_id}</td><td>{s.type}</td><td><span className={`badge ${s.ot !== -1 ? 'ot' : 'ot unassigned'}`}>{s.ot !== -1 ? `OT ${s.ot}` : 'Unassigned'}</span></td><td>{s.duration} mins</td></tr>)}
+                {data.surgeries?.map(s => <tr key={s.id}><td><button className="btn" style={{padding: '4px', background: 'transparent', color: 'var(--primary)', textDecoration: 'underline'}} onClick={() => setSelectedSurgery(s)}>PT-{s.patient || s.patient_id}</button></td><td>{s.type}</td><td><span className={`badge ${s.ot !== -1 ? 'ot' : 'ot unassigned'}`}>{s.ot !== -1 ? `OT ${s.ot}` : 'Unassigned'}</span></td><td>{s.duration} mins</td></tr>)}
+              </tbody>
+            </table>
+          </div>
+        )}
+        {activeTab === 'ots' && (
+          <div className="glass-panel fade-in">
+            <h2 className="page-title">Operation Theaters</h2>
+            <table>
+              <thead><tr><th>OT ID</th><th>Status</th><th>Action</th></tr></thead>
+              <tbody>
+                {data.ots?.map(ot => (
+                  <tr key={ot.id}>
+                    <td>OT {ot.id}</td>
+                    <td><span className={`badge ${ot.is_available === 'true' || ot.is_available === true ? 'ot' : 'ot unassigned'}`}>{ot.is_available === 'true' || ot.is_available === true ? 'Available' : 'Maintenance'}</span></td>
+                    <td>
+                      <button className={`btn ${ot.is_available === 'true' || ot.is_available === true ? 'btn-danger' : 'btn-primary'}`} onClick={() => toggleOTMaintenance(ot.id, ot.is_available)}>
+                        {ot.is_available === 'true' || ot.is_available === true ? 'Mark Maintenance' : 'Mark Available'}
+                      </button>
+                    </td>
+                  </tr>
+                ))}
               </tbody>
             </table>
           </div>
         )}
       </div>
+
+      {selectedSurgery && (
+        <div style={{position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000}}>
+          <div className="glass-panel fade-in" style={{background: 'white', width: '450px', maxWidth: '90%', padding: '24px'}}>
+            <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px'}}>
+              <h3>Surgery Details (PT-{selectedSurgery.patient || selectedSurgery.patient_id})</h3>
+              <button style={{background: 'transparent', border: 'none', cursor: 'pointer'}} onClick={() => setSelectedSurgery(null)}><X size={20} /></button>
+            </div>
+            <div style={{display: 'flex', flexDirection: 'column', gap: '12px', fontSize: '15px'}}>
+              <p><strong>Surgery Type:</strong> {selectedSurgery.type}</p>
+              <p><strong>Duration:</strong> {selectedSurgery.duration} mins</p>
+              <p><strong>Allocated Doctor:</strong> {selectedSurgery.surgeon || 'N/A'}</p>
+              <p><strong>Allocated Nurses:</strong> {selectedSurgery.assigned_nurses && selectedSurgery.assigned_nurses.length > 0 ? selectedSurgery.assigned_nurses.join(', ') : 'N/A'}</p>
+              <p><strong>Allocated OT:</strong> {selectedSurgery.ot !== -1 ? `OT ${selectedSurgery.ot}` : 'Unassigned'}</p>
+              <p><strong>Time Slot:</strong> {selectedSurgery.ot !== -1 ? `${formatTime(selectedSurgery.start_slot)} - ${formatTime(selectedSurgery.end_slot)}` : 'Pending'}</p>
+            </div>
+          </div>
+        </div>
+      )}
 
       {isModalOpen && (
         <div style={{position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000}}>

@@ -1,10 +1,11 @@
-SURGERIES 6
+SURGERIES 7
 1 Bypass 101 1 2 120 Standard 2
 2 Fracture 102 2 1 90 Standard 3
 3 Appendectomy 103 1 2 60 Standard 2
 4 TumorRemoval 104 2 2 150 Standard 2
-5 Heart_Transplant 105 1 2 200 Standard 1
 6 mb 255 2 2 60 Ventilator 1
+7 emergency 2510457 1 2 60 Standard 2
+8 surgery_111 111 1 2 60 Standard 2
 
 OTS 3
 1 Standard 1

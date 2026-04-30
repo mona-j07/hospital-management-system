@@ -1,22 +1,13 @@
 {
   "surgeries": [
     {
-      "id": 5,
-      "patient": 105,
-      "surgeon": "Dr.A",
-      "type": "Heart_Transplant",
-      "duration": 200,
-      "ot": 1,
-      "start_slot": 0,
-      "end_slot": 7
-    },
-    {
       "id": 6,
       "patient": 255,
-      "surgeon": "Dr.B",
+      "surgeon": "Dr.A",
       "type": "mb",
       "duration": 60,
-      "ot": 2,
+      "ot": 1,
+      "assigned_nurses": ["NurseX", "NurseY"],
       "start_slot": 0,
       "end_slot": 2
     },
@@ -27,8 +18,9 @@
       "type": "Bypass",
       "duration": 120,
       "ot": 1,
-      "start_slot": 7,
-      "end_slot": 11
+      "assigned_nurses": ["NurseX", "NurseY"],
+      "start_slot": 2,
+      "end_slot": 6
     },
     {
       "id": 3,
@@ -37,18 +29,42 @@
       "type": "Appendectomy",
       "duration": 60,
       "ot": 1,
-      "start_slot": 11,
-      "end_slot": 13
+      "assigned_nurses": ["NurseX", "NurseY"],
+      "start_slot": 6,
+      "end_slot": 8
     },
     {
       "id": 4,
       "patient": 104,
-      "surgeon": "Dr.B",
+      "surgeon": "Dr.A",
       "type": "TumorRemoval",
       "duration": 150,
-      "ot": 2,
-      "start_slot": 2,
-      "end_slot": 7
+      "ot": 1,
+      "assigned_nurses": ["NurseX", "NurseY"],
+      "start_slot": 8,
+      "end_slot": 13
+    },
+    {
+      "id": 7,
+      "patient": 2510457,
+      "surgeon": "Dr.A",
+      "type": "emergency",
+      "duration": 60,
+      "ot": 1,
+      "assigned_nurses": ["NurseX", "NurseY"],
+      "start_slot": 13,
+      "end_slot": 15
+    },
+    {
+      "id": 8,
+      "patient": 111,
+      "surgeon": "Dr.A",
+      "type": "surgery_111",
+      "duration": 60,
+      "ot": 1,
+      "assigned_nurses": ["NurseX", "NurseY"],
+      "start_slot": 15,
+      "end_slot": 17
     },
     {
       "id": 2,
@@ -57,44 +73,59 @@
       "type": "Fracture",
       "duration": 90,
       "ot": 2,
-      "start_slot": 7,
-      "end_slot": 10
+      "assigned_nurses": ["NurseZ"],
+      "start_slot": 0,
+      "end_slot": 3
     }
   ],
   "surgeons": [
     {
       "id": 1,
       "name": "Dr.A",
-      "surgeries_count": 3,
-      "worked_hours": 6,
-      "salary": 3000.00
+      "surgeries_count": 6,
+      "worked_hours": 8,
+      "salary": 4000.00
     },
     {
       "id": 2,
       "name": "Dr.B",
-      "surgeries_count": 3,
-      "worked_hours": 4,
-      "salary": 1800.00
+      "surgeries_count": 1,
+      "worked_hours": 1,
+      "salary": 450.00
     }
   ],
   "nurses": [
     {
       "id": 1,
       "name": "NurseX",
-      "worked_hours": 0,
-      "salary": 0.00
+      "worked_hours": 8,
+      "salary": 800.00
     },
     {
       "id": 2,
       "name": "NurseY",
-      "worked_hours": 0,
-      "salary": 0.00
+      "worked_hours": 8,
+      "salary": 800.00
     },
     {
       "id": 3,
       "name": "NurseZ",
-      "worked_hours": 0,
-      "salary": 0.00
+      "worked_hours": 1,
+      "salary": 100.00
+    }
+  ],
+  "ots": [
+    {
+      "id": 1,
+      "is_available": true
+    },
+    {
+      "id": 2,
+      "is_available": true
+    },
+    {
+      "id": 3,
+      "is_available": true
     }
   ]
 }
