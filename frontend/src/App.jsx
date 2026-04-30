@@ -225,8 +225,8 @@ const App = () => {
                 <tr key={s.id}>
                   <td>#{s.id}</td>
                   <td><button className="btn" style={{padding: '4px', background: 'transparent', color: 'var(--primary)', textDecoration: 'underline'}} onClick={() => setSelectedSurgery(s)}>PT-{s.patient || s.patient_id}</button></td>
-                  <td>{s.type} {s.urgency === 'Emergency' && <span className="badge priority-1">Emergency</span>}</td>
-                  <td>{s.surgeon}</td>
+                  <td>{s.type ? s.type.replace(/_/g, ' ') : 'Unknown'} {s.urgency === 'Emergency' && <span className="badge priority-1">Emergency</span>}</td>
+                  <td>{s.surgeon ? s.surgeon.replace(/_/g, ' ') : 'Pending'}</td>
                   <td><Clock size={14} style={{display: 'inline', marginRight: 4}}/>{s.duration}m</td>
                   <td><span className={`badge ${s.ot !== -1 ? 'ot' : 'ot unassigned'}`}>{s.ot !== -1 ? `OT ${s.ot}` : 'N/A'}</span></td>
                   <td>{s.ot !== -1 ? `${formatTime(s.start_slot)} - ${formatTime(s.end_slot)}` : 'Pending'}</td>
@@ -268,7 +268,7 @@ const App = () => {
             <table>
               <thead><tr><th>Name</th><th>Position</th><th>Specialization</th><th>Experience</th><th>Surgeries</th><th>Duration</th><th>Salary</th></tr></thead>
               <tbody>
-                {data.surgeons?.map(s => <tr key={s.id}><td>{s.name}</td><td>{s.position}</td><td>{s.specialization}</td><td>{s.experience} yrs</td><td>{s.surgeries_count}</td><td>{s.worked_hours} hrs</td><td>₹{s.salary.toFixed(2)}</td></tr>)}
+                {data.surgeons?.map(s => <tr key={s.id}><td>{s.name.replace(/_/g, ' ')}</td><td>{s.position.replace(/_/g, ' ')}</td><td>{s.specialization.replace(/_/g, ' ')}</td><td>{s.experience} yrs</td><td>{s.surgeries_count}</td><td>{s.worked_hours} hrs</td><td>₹{s.salary.toFixed(2)}</td></tr>)}
               </tbody>
             </table>
           </div>
@@ -279,7 +279,7 @@ const App = () => {
             <table>
               <thead><tr><th>Name</th><th>Position</th><th>Specialization</th><th>Experience</th><th>Worked Hours</th><th>Salary</th></tr></thead>
               <tbody>
-                {data.nurses?.map(n => <tr key={n.id}><td>{n.name}</td><td>{n.position}</td><td>{n.specialization}</td><td>{n.experience} yrs</td><td>{n.worked_hours} hrs</td><td>₹{n.salary.toFixed(2)}</td></tr>)}
+                {data.nurses?.map(n => <tr key={n.id}><td>{n.name.replace(/_/g, ' ')}</td><td>{n.position.replace(/_/g, ' ')}</td><td>{n.specialization.replace(/_/g, ' ')}</td><td>{n.experience} yrs</td><td>{n.worked_hours} hrs</td><td>₹{n.salary.toFixed(2)}</td></tr>)}
               </tbody>
             </table>
           </div>
@@ -304,8 +304,8 @@ const App = () => {
                 {data.ots?.map(ot => (
                   <tr key={ot.id}>
                     <td>OT {ot.id}</td>
-                    <td>{ot.name}</td>
-                    <td>{ot.type}</td>
+                    <td>{ot.name.replace(/_/g, ' ')}</td>
+                    <td>{ot.type.replace(/_/g, ' ')}</td>
                     <td><span className={`badge ${ot.is_available === 'true' || ot.is_available === true ? 'ot' : 'ot unassigned'}`}>{ot.is_available === 'true' || ot.is_available === true ? 'Available' : 'Maintenance'}</span></td>
                     <td>
                       <button className={`btn ${ot.is_available === 'true' || ot.is_available === true ? 'btn-danger' : 'btn-primary'}`} onClick={() => toggleOTMaintenance(ot.id, ot.is_available)}>
