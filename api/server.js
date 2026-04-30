@@ -52,7 +52,9 @@ function generateScheduleAndGetData() {
 
     // 3. Execute the C program
     try {
-        execSync('.\\hospital_backend.exe', { cwd: BACKEND_DIR });
+        const isWindows = process.platform === 'win32';
+        const execCmd = isWindows ? '.\\hospital_backend.exe' : './hospital_backend';
+        execSync(execCmd, { cwd: BACKEND_DIR });
     } catch (e) {
         console.error("Error executing C backend", e);
     }

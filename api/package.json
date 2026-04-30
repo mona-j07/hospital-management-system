@@ -4,6 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "start": "node server.js",
+    "postinstall": "gcc ../backend/*.c -o ../backend/hospital_backend",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
