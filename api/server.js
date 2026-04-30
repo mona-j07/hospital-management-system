@@ -69,8 +69,10 @@ function generateScheduleAndGetData() {
     // 4. Read the output.json produced
     if (fs.existsSync(OUTPUT_JSON)) {
         return JSON.parse(fs.readFileSync(OUTPUT_JSON, 'utf-8'));
+    } else if (fs.existsSync(path.join(BACKEND_DIR, 'output.json'))) {
+        return JSON.parse(fs.readFileSync(path.join(BACKEND_DIR, 'output.json'), 'utf-8'));
     } else {
-        return { error: "output.json not found" };
+        return { error: "output.json not found in either location" };
     }
 }
 
@@ -141,7 +143,7 @@ app.put('/api/ots/:id', (req, res) => {
 
 
 // Start the server
-const PORT = 3000;
-app.listen(PORT, () => {
-    console.log(`Node API running on http://localhost:${PORT}`);
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, '0.0.0.0', () => {
+    console.log(`Node API running on port ${PORT}`);
 });

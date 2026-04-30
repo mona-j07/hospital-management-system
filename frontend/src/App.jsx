@@ -163,8 +163,18 @@ const App = () => {
     doc.save("hospital_report.pdf");
   };
 
-  if (loading || !data) {
-    return <div className="loading">Loading Hospital Data...</div>;
+  if (loading) {
+    return <div className="loading" style={{textAlign: 'center', marginTop: '20vh', fontSize: '24px', color: '#0052cc'}}>Loading Hospital Data...</div>;
+  }
+  
+  if (!data || data.error) {
+    return (
+      <div style={{textAlign: 'center', marginTop: '20vh', color: 'red'}}>
+        <h2>Error Loading Data</h2>
+        <p>{data?.error || "Failed to connect to the backend API. Please check your network or backend server."}</p>
+        <button onClick={fetchData} className="btn btn-primary">Retry</button>
+      </div>
+    );
   }
 
   const renderDashboard = () => (
