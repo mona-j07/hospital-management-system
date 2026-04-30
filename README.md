@@ -46,3 +46,5 @@ This project is fully structured for modern cloud deployment:
 
 ---
 *Built for efficient hospital resource management.*
+FRONTEND : https://hospital-management-system-frzx.vercel.app/
+BACKEND: https://hospital-management-system-my4q.onrender.com
