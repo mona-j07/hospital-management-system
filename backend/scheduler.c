@@ -1,10 +1,37 @@
 #include <stdio.h>
 #include "hospital.h"
 
+#include <string.h>
+
+void calculate_priority(Surgery s[], int n) {
+    for (int i = 0; i < n; i++) {
+        float score = 0;
+        if (strcmp(s[i].urgency, "Emergency") == 0 || s[i].priority == 1) {
+            score += 100;
+            strcpy(s[i].reason, "Critical case (Emergency)");
+        } else if (strcmp(s[i].urgency, "Major") == 0 || s[i].priority == 2) {
+            score += 50;
+            strcpy(s[i].reason, "Major surgery");
+        } else {
+            score += 10;
+            strcpy(s[i].reason, "Minor surgery, lower urgency");
+        }
+
+        // Short duration bonus (assuming max duration is around 300 mins)
+        score += (300.0f - s[i].duration) / 10.0f;
+
+        // Resource availability score (just a placeholder bonus)
+        score += 5.0f; 
+
+        s[i].priority_score = score;
+    }
+}
+
 void sort_surgeries_by_priority(Surgery s[], int n) {
+    calculate_priority(s, n);
     for (int i = 0; i < n - 1; i++) {
         for (int j = 0; j < n - i - 1; j++) {
-            if (s[j].priority > s[j + 1].priority) {
+            if (s[j].priority_score < s[j + 1].priority_score) {
                 Surgery temp = s[j];
                 s[j] = s[j + 1];
                 s[j + 1] = temp;

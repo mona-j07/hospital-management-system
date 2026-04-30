@@ -23,29 +23,36 @@ function generateScheduleAndGetData() {
     let inputStr = `SURGERIES ${db.surgeries.length}\n`;
     db.surgeries.forEach(s => {
         // Remove spaces from string fields
-        const typeStr = s.type.replace(/ /g, '_') || "Unknown";
-        const eqStr = s.equipment.replace(/ /g, '_') || "Standard";
-        inputStr += `${s.id} ${typeStr} ${s.patient_id} ${s.surgeon_id} ${s.required_nurses} ${s.duration} ${eqStr} ${s.priority}\n`;
+        const typeStr = s.type ? s.type.replace(/ /g, '_') : "Unknown";
+        const urgencyStr = s.urgency ? s.urgency.replace(/ /g, '_') : "Minor";
+        const eqStr = s.equipment ? s.equipment.replace(/ /g, '_') : "Standard";
+        inputStr += `${s.id} ${typeStr} ${urgencyStr} ${s.patient_id} ${s.surgeon_id} ${s.required_nurses} ${s.duration} ${eqStr} ${s.priority}\n`;
     });
 
     inputStr += `\nOTS ${db.ots.length}\n`;
     db.ots.forEach(o => {
-        const eqStr = o.equipment.replace(/ /g, '_') || "Standard";
-        inputStr += `${o.id} ${eqStr} ${o.is_available}\n`;
+        const nameStr = o.name ? o.name.replace(/ /g, '_') : "OT";
+        const typeStr = o.type ? o.type.replace(/ /g, '_') : "General";
+        const eqStr = o.equipment ? o.equipment.replace(/ /g, '_') : "Standard";
+        inputStr += `${o.id} ${nameStr} ${typeStr} ${eqStr} ${o.is_available}\n`;
     });
 
     inputStr += `\nSURGEONS ${db.surgeons.length}\n`;
     db.surgeons.forEach(d => {
-        const nameStr = d.name.replace(/ /g, '_') || "Doctor";
-        const specStr = d.specialization.replace(/ /g, '_') || "General";
-        inputStr += `${d.id} ${nameStr} ${specStr} ${d.max_hours} ${d.rate}\n`;
+        const nameStr = d.name ? d.name.replace(/ /g, '_') : "Doctor";
+        const posStr = d.position ? d.position.replace(/ /g, '_') : "Doctor";
+        const specStr = d.specialization ? d.specialization.replace(/ /g, '_') : "General";
+        const exp = d.experience || 0;
+        inputStr += `${d.id} ${nameStr} ${posStr} ${specStr} ${exp} ${d.max_hours} ${d.rate}\n`;
     });
 
     inputStr += `\nNURSES ${db.nurses.length}\n`;
     db.nurses.forEach(n => {
-        const nameStr = n.name.replace(/ /g, '_') || "Nurse";
-        const specStr = n.specialization.replace(/ /g, '_') || "General";
-        inputStr += `${n.id} ${nameStr} ${specStr} ${n.max_hours} ${n.rate}\n`;
+        const nameStr = n.name ? n.name.replace(/ /g, '_') : "Nurse";
+        const posStr = n.position ? n.position.replace(/ /g, '_') : "Nurse";
+        const specStr = n.specialization ? n.specialization.replace(/ /g, '_') : "General";
+        const exp = n.experience || 0;
+        inputStr += `${n.id} ${nameStr} ${posStr} ${specStr} ${exp} ${n.max_hours} ${n.rate}\n`;
     });
 
     fs.writeFileSync(INPUT_TXT, inputStr);

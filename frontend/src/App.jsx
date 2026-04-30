@@ -16,11 +16,10 @@ const App = () => {
   const [formData, setFormData] = useState({
     type: '',
     patient_id: '',
-    surgeon_id: '1',
     required_nurses: '2',
     duration: '60',
     equipment: 'Standard',
-    priority: '2'
+    urgency: 'Major'
   });
 
   const fetchData = async () => {
@@ -45,7 +44,7 @@ const App = () => {
   };
 
   const openAddModal = () => {
-    setFormData({ type: '', patient_id: '', surgeon_id: '1', required_nurses: '2', duration: '60', equipment: 'Standard', priority: '2' });
+    setFormData({ type: '', patient_id: '', required_nurses: '2', duration: '60', equipment: 'Standard', urgency: 'Major' });
     setEditingId(null);
     setIsModalOpen(true);
   };
@@ -54,11 +53,10 @@ const App = () => {
     setFormData({
       type: s.type,
       patient_id: s.patient || s.patient_id || '',
-      surgeon_id: data.surgeons.find(doc => doc.name === s.surgeon)?.id || s.surgeon_id || '1',
       required_nurses: '2', 
       duration: s.duration,
       equipment: 'Standard',
-      priority: '2'
+      urgency: s.urgency || 'Major'
     });
     setEditingId(s.id);
     setIsModalOpen(true);
@@ -69,11 +67,12 @@ const App = () => {
     const payload = {
       type: formData.type,
       patient_id: parseInt(formData.patient_id),
-      surgeon_id: parseInt(formData.surgeon_id),
+      surgeon_id: -1, // Auto-allocated
       required_nurses: parseInt(formData.required_nurses),
       duration: parseInt(formData.duration),
       equipment: formData.equipment,
-      priority: parseInt(formData.priority)
+      urgency: formData.urgency,
+      priority: formData.urgency === 'Emergency' ? 1 : formData.urgency === 'Major' ? 2 : 3
     };
 
     try {
@@ -216,7 +215,7 @@ const App = () => {
                 <tr key={s.id}>
                   <td>#{s.id}</td>
                   <td><button className="btn" style={{padding: '4px', background: 'transparent', color: 'var(--primary)', textDecoration: 'underline'}} onClick={() => setSelectedSurgery(s)}>PT-{s.patient || s.patient_id}</button></td>
-                  <td>{s.type} {s.priority === 1 && <span className="badge priority-1">Emergency</span>}</td>
+                  <td>{s.type} {s.urgency === 'Emergency' && <span className="badge priority-1">Emergency</span>}</td>
                   <td>{s.surgeon}</td>
                   <td><Clock size={14} style={{display: 'inline', marginRight: 4}}/>{s.duration}m</td>
                   <td><span className={`badge ${s.ot !== -1 ? 'ot' : 'ot unassigned'}`}>{s.ot !== -1 ? `OT ${s.ot}` : 'N/A'}</span></td>
@@ -246,6 +245,7 @@ const App = () => {
           <div className={`nav-item ${activeTab === 'nurses' ? 'active' : ''}`} onClick={() => setActiveTab('nurses')}>Nurses</div>
           <div className={`nav-item ${activeTab === 'ots' ? 'active' : ''}`} onClick={() => setActiveTab('ots')}>OTs</div>
           <div className={`nav-item ${activeTab === 'patients' ? 'active' : ''}`} onClick={() => setActiveTab('patients')}>Patients</div>
+          <div className={`nav-item ${activeTab === 'ai_list' ? 'active' : ''}`} onClick={() => setActiveTab('ai_list')}>AI Preference List</div>
         </div>
         <button className="btn btn-primary" onClick={generatePDF}><Download size={18} /> Export Reports</button>
       </nav>
@@ -254,22 +254,22 @@ const App = () => {
         {activeTab === 'dashboard' && renderDashboard()}
         {activeTab === 'surgeons' && (
           <div className="glass-panel fade-in">
-            <h2 className="page-title">Surgeon Report</h2>
+            <h2 className="page-title">Surgeon Management</h2>
             <table>
-              <thead><tr><th>Name</th><th>Surgeries</th><th>Duration</th><th>Salary</th></tr></thead>
+              <thead><tr><th>Name</th><th>Position</th><th>Specialization</th><th>Experience</th><th>Surgeries</th><th>Duration</th><th>Salary</th></tr></thead>
               <tbody>
-                {data.surgeons?.map(s => <tr key={s.id}><td>{s.name}</td><td>{s.surgeries_count}</td><td>{s.worked_hours} hrs</td><td>₹{s.salary.toFixed(2)}</td></tr>)}
+                {data.surgeons?.map(s => <tr key={s.id}><td>{s.name}</td><td>{s.position}</td><td>{s.specialization}</td><td>{s.experience} yrs</td><td>{s.surgeries_count}</td><td>{s.worked_hours} hrs</td><td>₹{s.salary.toFixed(2)}</td></tr>)}
               </tbody>
             </table>
           </div>
         )}
         {activeTab === 'nurses' && (
           <div className="glass-panel fade-in">
-            <h2 className="page-title">Nurse Report</h2>
+            <h2 className="page-title">Nurse Management</h2>
             <table>
-              <thead><tr><th>Name</th><th>Worked Hours</th><th>Salary</th></tr></thead>
+              <thead><tr><th>Name</th><th>Position</th><th>Specialization</th><th>Experience</th><th>Worked Hours</th><th>Salary</th></tr></thead>
               <tbody>
-                {data.nurses?.map(n => <tr key={n.id}><td>{n.name}</td><td>{n.worked_hours} hrs</td><td>₹{n.salary.toFixed(2)}</td></tr>)}
+                {data.nurses?.map(n => <tr key={n.id}><td>{n.name}</td><td>{n.position}</td><td>{n.specialization}</td><td>{n.experience} yrs</td><td>{n.worked_hours} hrs</td><td>₹{n.salary.toFixed(2)}</td></tr>)}
               </tbody>
             </table>
           </div>
@@ -289,11 +289,13 @@ const App = () => {
           <div className="glass-panel fade-in">
             <h2 className="page-title">Operation Theaters</h2>
             <table>
-              <thead><tr><th>OT ID</th><th>Status</th><th>Action</th></tr></thead>
+              <thead><tr><th>OT ID</th><th>Name</th><th>Type</th><th>Status</th><th>Action</th></tr></thead>
               <tbody>
                 {data.ots?.map(ot => (
                   <tr key={ot.id}>
                     <td>OT {ot.id}</td>
+                    <td>{ot.name}</td>
+                    <td>{ot.type}</td>
                     <td><span className={`badge ${ot.is_available === 'true' || ot.is_available === true ? 'ot' : 'ot unassigned'}`}>{ot.is_available === 'true' || ot.is_available === true ? 'Available' : 'Maintenance'}</span></td>
                     <td>
                       <button className={`btn ${ot.is_available === 'true' || ot.is_available === true ? 'btn-danger' : 'btn-primary'}`} onClick={() => toggleOTMaintenance(ot.id, ot.is_available)}>
@@ -304,6 +306,22 @@ const App = () => {
                 ))}
               </tbody>
             </table>
+          </div>
+        )}
+        {activeTab === 'ai_list' && (
+          <div className="glass-panel fade-in">
+            <h2 className="page-title">AI Preference List</h2>
+            <div style={{display: 'flex', flexDirection: 'column', gap: '15px'}}>
+              {data.preference_order?.map((pref, i) => (
+                <div key={i} style={{padding: '16px', background: 'rgba(255,255,255,0.8)', borderRadius: '8px', borderLeft: pref.type === 'Emergency' ? '4px solid red' : pref.type === 'Major' ? '4px solid orange' : '4px solid green'}}>
+                  <h3 style={{margin: '0 0 8px 0'}}>
+                    {i + 1}. Patient {pref.patient} ({pref.type})
+                  </h3>
+                  <p style={{margin: 0, color: '#555'}}><strong>Reasoning:</strong> {pref.reason}</p>
+                  <p style={{margin: '4px 0 0 0', fontSize: '12px', color: '#888'}}>Priority Score: {pref.score.toFixed(2)}</p>
+                </div>
+              ))}
+            </div>
           </div>
         )}
       </div>
@@ -337,18 +355,15 @@ const App = () => {
             <form onSubmit={handleSubmit} style={{display: 'flex', flexDirection: 'column', gap: '12px'}}>
               <input style={{padding: '8px', borderRadius: '6px', border: '1px solid #ccc'}} required name="type" placeholder="Surgery Type" value={formData.type} onChange={handleInputChange} />
               <input style={{padding: '8px', borderRadius: '6px', border: '1px solid #ccc'}} required type="number" name="patient_id" placeholder="Patient ID" value={formData.patient_id} onChange={handleInputChange} />
-              <select style={{padding: '8px', borderRadius: '6px', border: '1px solid #ccc'}} name="surgeon_id" value={formData.surgeon_id} onChange={handleInputChange}>
-                {data.surgeons?.map(s => <option key={s.id} value={s.id}>{s.name} ({s.specialization})</option>)}
-              </select>
               <input style={{padding: '8px', borderRadius: '6px', border: '1px solid #ccc'}} required type="number" name="duration" placeholder="Duration (mins)" value={formData.duration} onChange={handleInputChange} />
               <select style={{padding: '8px', borderRadius: '6px', border: '1px solid #ccc'}} name="equipment" value={formData.equipment} onChange={handleInputChange}>
                 <option value="Standard">Standard</option>
                 <option value="Ventilator">Ventilator</option>
               </select>
-              <select style={{padding: '8px', borderRadius: '6px', border: '1px solid #ccc'}} name="priority" value={formData.priority} onChange={handleInputChange}>
-                <option value="1">1 - Emergency</option>
-                <option value="2">2 - High</option>
-                <option value="3">3 - Normal</option>
+              <select style={{padding: '8px', borderRadius: '6px', border: '1px solid #ccc'}} name="urgency" value={formData.urgency} onChange={handleInputChange}>
+                <option value="Emergency">Emergency</option>
+                <option value="Major">Major</option>
+                <option value="Minor">Minor</option>
               </select>
               <button type="submit" className="btn btn-primary" style={{marginTop: '10px'}}>{editingId ? 'Save Changes' : 'Add Surgery'}</button>
             </form>

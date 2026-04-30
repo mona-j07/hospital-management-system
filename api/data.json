@@ -1,130 +1,195 @@
 {
-  "surgeries": [
-    {
-      "id": 1,
-      "type": "Bypass",
-      "patient_id": 101,
-      "surgeon_id": 1,
-      "required_nurses": 2,
-      "duration": 120,
-      "equipment": "Standard",
-      "priority": 2
-    },
-    {
-      "id": 2,
-      "type": "Fracture",
-      "patient_id": 102,
-      "surgeon_id": 2,
-      "required_nurses": 1,
-      "duration": 90,
-      "equipment": "Standard",
-      "priority": 3
-    },
-    {
-      "id": 3,
-      "type": "Appendectomy",
-      "patient_id": 103,
-      "surgeon_id": 1,
-      "required_nurses": 2,
-      "duration": 60,
-      "equipment": "Standard",
-      "priority": 2
-    },
-    {
-      "id": 4,
-      "type": "TumorRemoval",
-      "patient_id": 104,
-      "surgeon_id": 2,
-      "required_nurses": 2,
-      "duration": 150,
-      "equipment": "Standard",
-      "priority": 2
-    },
-    {
-      "type": "mb",
-      "patient_id": 255,
-      "surgeon_id": 2,
-      "required_nurses": 2,
-      "duration": 60,
-      "equipment": "Ventilator",
-      "priority": 1,
-      "id": 6
-    },
-    {
-      "type": "emergency",
-      "patient_id": 2510457,
-      "surgeon_id": 1,
-      "required_nurses": 2,
-      "duration": 60,
-      "equipment": "Standard",
-      "priority": 2,
-      "id": 7
-    },
-    {
-      "type": "surgery 111",
-      "patient_id": 111,
-      "surgeon_id": 1,
-      "required_nurses": 2,
-      "duration": 60,
-      "equipment": "Standard",
-      "priority": 2,
-      "id": 8
-    }
-  ],
+  "surgeries": [],
   "ots": [
     {
       "id": 1,
-      "equipment": "Standard",
+      "name": "OT-1",
+      "type": "General Surgery OT",
+      "equipment": "Operation table, OT light, anesthesia trolley, cardiac monitor, suction unit, IV stand, instrument trolley, sterilizer",
       "is_available": 1
     },
     {
       "id": 2,
-      "equipment": "Standard",
+      "name": "OT-2",
+      "type": "Orthopedic OT",
+      "equipment": "Orthopedic table, C-arm compatible setup, drill system, power instruments, suction unit, pulse oximeter, OT light",
       "is_available": 1
     },
     {
       "id": 3,
-      "equipment": "Ventilator",
+      "name": "OT-3",
+      "type": "Cardiac OT",
+      "equipment": "Cardiac monitor, defibrillator, ventilator, anesthesia trolley, suction unit, oxygen cylinder, OT light",
+      "is_available": 1
+    },
+    {
+      "id": 4,
+      "name": "OT-4",
+      "type": "Gynecology OT",
+      "equipment": "Operation table, stirrups, fetal monitor, anesthesia trolley, suction unit, IV stand, OT light",
+      "is_available": 1
+    },
+    {
+      "id": 5,
+      "name": "OT-5",
+      "type": "Neuro OT",
+      "equipment": "Operative microscope, OT table, anesthesia trolley, ventilator, suction unit, cardiac monitor",
+      "is_available": 1
+    },
+    {
+      "id": 6,
+      "name": "OT-6",
+      "type": "ENT OT",
+      "equipment": "Microscopy setup, suction unit, OT light, instrument trolley, anesthesia trolley, monitor",
       "is_available": 1
     }
   ],
   "surgeons": [
     {
       "id": 1,
-      "name": "Dr.A",
-      "specialization": "Cardiology",
+      "name": "Dr. Arun Kumar",
+      "position": "Consultant Surgeon",
+      "specialization": "General Surgery",
+      "experience": 18,
       "max_hours": 8,
       "rate": 500
     },
     {
       "id": 2,
-      "name": "Dr.B",
+      "name": "Dr. Meera Iyer",
+      "position": "Senior Consultant",
       "specialization": "Orthopedics",
+      "experience": 15,
+      "max_hours": 8,
+      "rate": 500
+    },
+    {
+      "id": 3,
+      "name": "Dr. S. Raghavan",
+      "position": "Consultant",
+      "specialization": "Cardiothoracic Surgery",
+      "experience": 20,
+      "max_hours": 8,
+      "rate": 600
+    },
+    {
+      "id": 4,
+      "name": "Dr. Priya Nair",
+      "position": "Associate Consultant",
+      "specialization": "Gynecology & Obstetrics",
+      "experience": 10,
       "max_hours": 8,
       "rate": 450
+    },
+    {
+      "id": 5,
+      "name": "Dr. Vikram Shah",
+      "position": "Consultant",
+      "specialization": "Neurosurgery",
+      "experience": 17,
+      "max_hours": 8,
+      "rate": 700
+    },
+    {
+      "id": 6,
+      "name": "Dr. Anjali Menon",
+      "position": "Consultant",
+      "specialization": "Anesthesiology",
+      "experience": 14,
+      "max_hours": 8,
+      "rate": 500
+    },
+    {
+      "id": 7,
+      "name": "Dr. Karthik Subramanian",
+      "position": "Senior Resident",
+      "specialization": "Urology",
+      "experience": 7,
+      "max_hours": 8,
+      "rate": 350
+    },
+    {
+      "id": 8,
+      "name": "Dr. Nisha Verma",
+      "position": "Consultant",
+      "specialization": "ENT Surgery",
+      "experience": 12,
+      "max_hours": 8,
+      "rate": 400
     }
   ],
   "nurses": [
     {
       "id": 1,
-      "name": "NurseX",
-      "specialization": "General",
+      "name": "Ms. Lakshmi Devi",
+      "position": "OT Head Nurse",
+      "specialization": "Operation Theatre Nursing",
+      "experience": 16,
       "max_hours": 8,
-      "rate": 100
+      "rate": 200
     },
     {
       "id": 2,
-      "name": "NurseY",
-      "specialization": "General",
+      "name": "Ms. Farhana Begum",
+      "position": "OT Staff Nurse",
+      "specialization": "Perioperative Nursing",
+      "experience": 11,
       "max_hours": 8,
-      "rate": 100
+      "rate": 150
     },
     {
       "id": 3,
-      "name": "NurseZ",
-      "specialization": "General",
+      "name": "Ms. Divya Raj",
+      "position": "Senior OT Nurse",
+      "specialization": "Surgical Assistance",
+      "experience": 9,
       "max_hours": 8,
-      "rate": 100
+      "rate": 180
+    },
+    {
+      "id": 4,
+      "name": "Ms. Ayesha Khan",
+      "position": "OT Staff Nurse",
+      "specialization": "Scrub Nursing",
+      "experience": 8,
+      "max_hours": 8,
+      "rate": 150
+    },
+    {
+      "id": 5,
+      "name": "Ms. Revathi S",
+      "position": "OT Nurse",
+      "specialization": "Post-operative Care",
+      "experience": 6,
+      "max_hours": 8,
+      "rate": 130
+    },
+    {
+      "id": 6,
+      "name": "Ms. Keerthana P",
+      "position": "OT Nurse",
+      "specialization": "Anaesthesia Assistance",
+      "experience": 5,
+      "max_hours": 8,
+      "rate": 130
+    },
+    {
+      "id": 7,
+      "name": "Ms. Jennifer M",
+      "position": "OT Coordinator Nurse",
+      "specialization": "OT Coordination",
+      "experience": 13,
+      "max_hours": 8,
+      "rate": 190
+    },
+    {
+      "id": 8,
+      "name": "Ms. Sangeetha R",
+      "position": "Scrub Nurse",
+      "specialization": "Sterile Field Management",
+      "experience": 10,
+      "max_hours": 8,
+      "rate": 160
     }
   ]
 }

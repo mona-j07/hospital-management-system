@@ -7,12 +7,15 @@
 typedef struct {
     int id;
     char type[50];
+    char urgency[20]; // Emergency, Major, Minor
     int patient_id;
     int surgeon_id;
     int required_nurses;
     int duration; // in minutes
-    char equipment[50];
-    int priority; // 1 = highest
+    char equipment[255];
+    int priority; // Base priority input
+    float priority_score; // Calculated priority score
+    char reason[100]; // Reason for priority
     int assigned_ot;
     int assigned_nurses[10];
     int num_assigned_nurses;
@@ -22,7 +25,9 @@ typedef struct {
 
 typedef struct {
     int id;
-    char equipment[50];
+    char name[50];
+    char type[50];
+    char equipment[255];
     int is_available;
     int schedule[MAX_SLOTS]; // 0 = free, 1 = booked
 } OT;
@@ -30,7 +35,9 @@ typedef struct {
 typedef struct {
     int id;
     char name[50];
+    char position[50];
     char specialization[50];
+    int experience;
     int max_hours;
     int worked_hours;
     float rate;
@@ -40,7 +47,9 @@ typedef struct {
 typedef struct {
     int id;
     char name[50];
+    char position[50];
     char specialization[50];
+    int experience;
     int max_hours;
     int worked_hours;
     float rate;
