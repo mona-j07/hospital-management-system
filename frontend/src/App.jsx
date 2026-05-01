@@ -141,9 +141,9 @@ const App = () => {
     const pageHeight = doc.internal.pageSize.getHeight();
     
     // 1. HEADER SECTION
-    // Add Logo
+    // Add Branded Logo (Medium Size)
     try {
-      doc.addImage('/logo.png', 'PNG', 14, 10, 30, 15);
+      doc.addImage('/logo.png', 'PNG', 14, 5, 40, 35);
     } catch (e) {
       console.warn("Logo not found");
     }
@@ -151,15 +151,19 @@ const App = () => {
     doc.setFontSize(22);
     doc.setTextColor(0, 51, 102);
     doc.setFont("helvetica", "bold");
-    doc.text("Episkey HP", pageWidth / 2, 20, { align: 'center' });
+    doc.text("Episkey HP", pageWidth / 2, 15, { align: 'center' });
     
     doc.setFontSize(12);
     doc.setFont("helvetica", "normal");
-    doc.text("Hospital Management System", pageWidth / 2, 28, { align: 'center' });
+    doc.text("Hospital Management System", pageWidth / 2, 23, { align: 'center' });
+    
+    doc.setFontSize(10);
+    doc.setFont("helvetica", "italic");
+    doc.text("Branding: Jaymona JJ JK JM", pageWidth / 2, 30, { align: 'center' });
     
     doc.setDrawColor(0, 51, 102);
     doc.setLineWidth(0.5);
-    doc.line(14, 32, pageWidth - 14, 32);
+    doc.line(14, 34, pageWidth - 14, 34);
     
     doc.setFontSize(16);
     doc.setFont("helvetica", "bold");
