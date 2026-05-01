@@ -54,24 +54,37 @@ void export_json() {
         fprintf(f, "      \"experience\": %d,\n", surgeons[i].experience);
         
         int surg_count = 0;
+        int total_mins = 0;
         for (int s = 0; s < num_surgeries; s++) {
             if (surgeries[s].surgeon_id == surgeons[i].id && surgeries[s].assigned_ot != -1) {
                 surg_count++;
+                total_mins += surgeries[s].duration;
             }
         }
+        
+        float salary = calculate_salary(surgeons[i].experience, total_mins, surg_count, 1);
+        float hours = total_mins / 60.0;
+        float ot_hours = hours > 8 ? hours - 8 : 0;
+
         fprintf(f, "      \"surgeries_count\": %d,\n", surg_count);
-        fprintf(f, "      \"worked_hours\": %d,\n", surgeons[i].worked_hours);
-        fprintf(f, "      \"salary\": %.2f,\n", calculate_salary(surgeons[i].worked_hours, surg_count, surgeons[i].rate));
-        fprintf(f, "      \"overtime_hours\": %d,\n", surgeons[i].worked_hours > 8 ? surgeons[i].worked_hours - 8 : 0);
+        fprintf(f, "      \"worked_hours\": %.1f,\n", hours);
+        fprintf(f, "      \"salary\": %.2f,\n", salary);
+        fprintf(f, "      \"overtime_hours\": %.1f,\n", ot_hours);
         fprintf(f, "      \"bonus_applied\": %s,\n", surg_count > 5 ? "true" : "false");
-        char reason[100];
-        if (surgeons[i].worked_hours > 8 && surg_count > 5) sprintf(reason, "Worked %d hours -> %d hours overtime added. Completed %d surgeries -> bonus applied.", surgeons[i].worked_hours, surgeons[i].worked_hours - 8, surg_count);
-        else if (surgeons[i].worked_hours > 8) sprintf(reason, "Worked %d hours -> %d hours overtime added. No bonus.", surgeons[i].worked_hours, surgeons[i].worked_hours - 8);
-        else if (surg_count > 5) sprintf(reason, "Normal shift -> no overtime. Completed %d surgeries -> bonus applied.", surg_count);
-        else sprintf(reason, "Normal shift -> no bonus");
+        
+        char reason[255];
+        if (hours > 8 && surg_count > 5) {
+            sprintf(reason, "Worked %.1f hours (%.1f hours overtime) | Completed %d surgeries (bonus applied)", hours, ot_hours, surg_count);
+        } else if (hours > 8) {
+            sprintf(reason, "Worked %.1f hours (%.1f hours overtime) | No bonus applied", hours, ot_hours);
+        } else if (surg_count > 5) {
+            sprintf(reason, "Worked %.1f hours (within normal shift) | Completed %d surgeries (bonus applied)", hours, surg_count);
+        } else {
+            sprintf(reason, "Worked %.1f hours (within normal shift) | No overtime or bonus applied", hours);
+        }
+        
         fprintf(f, "      \"payroll_reason\": \"%s\"\n", reason);
         fprintf(f, "    }%s\n", (i == num_surgeons - 1) ? "" : ",");
-
     }
     fprintf(f, "  ],\n");
 
@@ -83,27 +96,42 @@ void export_json() {
         fprintf(f, "      \"position\": \"%s\",\n", nurses[i].position);
         fprintf(f, "      \"specialization\": \"%s\",\n", nurses[i].specialization);
         fprintf(f, "      \"experience\": %d,\n", nurses[i].experience);
+        
         int surg_count = 0;
+        int total_mins = 0;
         for (int s = 0; s < num_surgeries; s++) {
             if (surgeries[s].assigned_ot != -1) {
                 for(int k=0; k<surgeries[s].num_assigned_nurses; k++) {
                     if (surgeries[s].assigned_nurses[k] == nurses[i].id) {
                         surg_count++;
+                        total_mins += surgeries[s].duration;
                         break;
                     }
                 }
             }
         }
+        
+        float salary = calculate_salary(nurses[i].experience, total_mins, surg_count, 0);
+        float hours = total_mins / 60.0;
+        float ot_hours = hours > 8 ? hours - 8 : 0;
+
         fprintf(f, "      \"surgeries_count\": %d,\n", surg_count);
-        fprintf(f, "      \"worked_hours\": %d,\n", nurses[i].worked_hours);
-        fprintf(f, "      \"salary\": %.2f,\n", calculate_salary(nurses[i].worked_hours, surg_count, nurses[i].rate));
-        fprintf(f, "      \"overtime_hours\": %d,\n", nurses[i].worked_hours > 8 ? nurses[i].worked_hours - 8 : 0);
+        fprintf(f, "      \"worked_hours\": %.1f,\n", hours);
+        fprintf(f, "      \"salary\": %.2f,\n", salary);
+        fprintf(f, "      \"overtime_hours\": %.1f,\n", ot_hours);
         fprintf(f, "      \"bonus_applied\": %s,\n", surg_count > 5 ? "true" : "false");
-        char reason[100];
-        if (nurses[i].worked_hours > 8 && surg_count > 5) sprintf(reason, "Worked %d hours -> %d hours overtime added. Completed %d surgeries -> bonus applied.", nurses[i].worked_hours, nurses[i].worked_hours - 8, surg_count);
-        else if (nurses[i].worked_hours > 8) sprintf(reason, "Worked %d hours -> %d hours overtime added. No bonus.", nurses[i].worked_hours, nurses[i].worked_hours - 8);
-        else if (surg_count > 5) sprintf(reason, "Normal shift -> no overtime. Completed %d surgeries -> bonus applied.", surg_count);
-        else sprintf(reason, "Normal shift -> no bonus");
+        
+        char reason[255];
+        if (hours > 8 && surg_count > 5) {
+            sprintf(reason, "Worked %.1f hours (%.1f hours overtime) | Completed %d surgeries (bonus applied)", hours, ot_hours, surg_count);
+        } else if (hours > 8) {
+            sprintf(reason, "Worked %.1f hours (%.1f hours overtime) | No bonus applied", hours, ot_hours);
+        } else if (surg_count > 5) {
+            sprintf(reason, "Worked %.1f hours (within normal shift) | Completed %d surgeries (bonus applied)", hours, surg_count);
+        } else {
+            sprintf(reason, "Worked %.1f hours (within normal shift) | No overtime or bonus applied", hours);
+        }
+        
         fprintf(f, "      \"payroll_reason\": \"%s\"\n", reason);
         fprintf(f, "    }%s\n", (i == num_nurses - 1) ? "" : ",");
     }

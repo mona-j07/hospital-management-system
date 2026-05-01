@@ -230,14 +230,16 @@ const App = () => {
 
       doc.setFont("helvetica", "normal");
       doc.setFontSize(10);
-      const baseSalary = s.salary - (s.overtime_hours * 1.5 * (s.rate || 150)) - (s.bonus_applied === "true" || s.bonus_applied === true ? 1000 : 0);
-      const otBonus = s.overtime_hours * 1.5 * (s.rate || 150);
-      const surgeryBonus = (s.bonus_applied === "true" || s.bonus_applied === true ? 1000 : 0);
+      
+      const rate = 1000 + (s.experience * 50);
+      const otBonus = s.overtime_hours * rate * 1.5;
+      const surgeryBonus = (s.bonus_applied === "true" || s.bonus_applied === true ? 2000 : 0);
+      const basePay = s.salary - otBonus - surgeryBonus;
 
       const rows = [
         `Total Hours: ${s.worked_hours}`,
         `Surgeries Handled: ${s.surgeries_count}`,
-        `Base Salary: ₹${baseSalary.toFixed(0)}`,
+        `Base Salary: ₹${basePay.toFixed(0)}`,
         `Overtime Bonus: ₹${otBonus.toFixed(0)}`,
         `Surgery Bonus: ₹${surgeryBonus.toFixed(0)}`,
         `Final Salary: ₹${s.salary.toFixed(0)}`
@@ -280,14 +282,16 @@ const App = () => {
 
       doc.setFont("helvetica", "normal");
       doc.setFontSize(10);
-      const baseSalary = n.salary - (n.overtime_hours * 1.5 * (n.rate || 100)) - (n.bonus_applied === "true" || n.bonus_applied === true ? 500 : 0);
-      const otBonus = n.overtime_hours * 1.5 * (n.rate || 100);
-      const surgeryBonus = (n.bonus_applied === "true" || n.bonus_applied === true ? 500 : 0);
+
+      const rate = 200 + (n.experience * 20);
+      const otBonus = n.overtime_hours * rate * 1.5;
+      const surgeryBonus = (n.bonus_applied === "true" || n.bonus_applied === true ? 800 : 0);
+      const basePay = n.salary - otBonus - surgeryBonus;
 
       const rows = [
         `Total Hours: ${n.worked_hours}`,
         `Surgeries Assisted: ${n.surgeries_count}`,
-        `Base Salary: ₹${baseSalary.toFixed(0)}`,
+        `Base Salary: ₹${basePay.toFixed(0)}`,
         `Overtime Bonus: ₹${otBonus.toFixed(0)}`,
         `Surgery Bonus: ₹${surgeryBonus.toFixed(0)}`,
         `Final Salary: ₹${n.salary.toFixed(0)}`
