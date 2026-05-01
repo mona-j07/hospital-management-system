@@ -255,6 +255,23 @@ const App = () => {
     );
   }
 
+  const renderAIList = () => (
+    <div className="glass-panel fade-in">
+      <h2 className="page-title">AI Preference List</h2>
+      <div style={{display: 'flex', flexDirection: 'column', gap: '15px'}}>
+        {data.preference_order?.map((pref, i) => (
+          <div key={i} style={{padding: '16px', background: 'rgba(255,255,255,0.8)', borderRadius: '8px', borderLeft: pref.type === 'Emergency' ? '4px solid red' : pref.type === 'Major' ? '4px solid orange' : '4px solid green'}}>
+            <h3 style={{margin: '0 0 8px 0'}}>
+              {i + 1}. Patient {pref.patient} ({pref.type})
+            </h3>
+            <p style={{margin: 0, color: '#555'}}><strong>Reasoning:</strong> {pref.reason}</p>
+            <p style={{margin: '4px 0 0 0', fontSize: '12px', color: '#888'}}>Priority Score: {pref.score.toFixed(2)}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+
   const renderDashboard = () => (
     <div className="fade-in">
       <div className="dashboard-grid">
@@ -276,7 +293,7 @@ const App = () => {
         </div>
       </div>
 
-      <div className="glass-panel">
+      <div className="glass-panel" style={{marginBottom: '32px'}}>
         <h2 className="page-title">
           OT Schedule
           <div style={{display: 'flex', gap: '10px'}}>
@@ -324,6 +341,8 @@ const App = () => {
           </table>
         </div>
       </div>
+
+      {renderAIList()}
     </div>
   );
 
@@ -449,6 +468,7 @@ const App = () => {
               <div className={`nav-item ${activeTab === 'nurses' ? 'active' : ''}`} onClick={() => setActiveTab('nurses')}>Nurses</div>
               <div className={`nav-item ${activeTab === 'payroll' ? 'active' : ''}`} onClick={() => setActiveTab('payroll')}><DollarSign size={16} style={{marginRight: 6, display: 'inline'}}/>Payroll</div>
               <div className={`nav-item ${activeTab === 'ots' ? 'active' : ''}`} onClick={() => setActiveTab('ots')}>OTs</div>
+              <div className={`nav-item ${activeTab === 'ai_list' ? 'active' : ''}`} onClick={() => setActiveTab('ai_list')}><Clipboard size={16} style={{marginRight: 6, display: 'inline'}}/>AI List</div>
             </div>
           </div>
 
@@ -467,6 +487,7 @@ const App = () => {
         {activeTab === 'dashboard' && renderDashboard()}
         {activeTab === 'payroll' && renderPayroll()}
         {activeTab === 'patient_portal' && renderPatientPortal()}
+        {activeTab === 'ai_list' && renderAIList()}
         
         {activeTab === 'surgeons' && (
           <div className="glass-panel fade-in">
