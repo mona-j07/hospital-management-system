@@ -22,7 +22,9 @@ const App = () => {
     required_nurses: '2',
     duration: '60',
     equipment: 'Standard',
-    urgency: 'Major'
+    urgency: 'Major',
+    date: '',
+    startTime: ''
   });
 
   const fetchData = async () => {
@@ -47,7 +49,7 @@ const App = () => {
   };
 
   const openAddModal = () => {
-    setFormData({ type: '', patient_id: '', required_nurses: '2', duration: '60', equipment: 'Standard', urgency: 'Major' });
+    setFormData({ type: '', patient_id: '', required_nurses: '2', duration: '60', equipment: 'Standard', urgency: 'Major', date: '', startTime: '' });
     setEditingId(null);
     setIsModalOpen(true);
   };
@@ -59,23 +61,81 @@ const App = () => {
       required_nurses: s.required_nurses || '2', 
       duration: s.duration,
       equipment: s.equipment || 'Standard',
-      urgency: s.urgency || 'Major'
+      urgency: s.urgency || 'Major',
+      date: s.date || '',
+      startTime: s.startTime || (s.start_slot !== -1 ? formatTime(s.start_slot) : '')
     });
     setEditingId(s.id);
     setIsModalOpen(true);
   };
 
+  const calculateEndTime = (startTime, duration) => {
+    let [h, m] = startTime.split(":").map(Number);
+    let totalMinutes = h * 60 + m + parseInt(duration);
+    let endH = Math.floor(totalMinutes / 60);
+    let endM = totalMinutes % 60;
+    return `${endH.toString().padStart(2, '0')}:${endM.toString().padStart(2, '0')}`;
+  };
+
+  const timeToSlot = (timeStr) => {
+    const [h, m] = timeStr.split(":").map(Number);
+    return (h * 2) + (m >= 30 ? 1 : 0);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // VALIDATION
+    const today = new Date();
+    today.setHours(0,0,0,0);
+    const selectedDate = new Date(formData.date);
+    selectedDate.setHours(0,0,0,0);
+
+    if (selectedDate < today) {
+      alert("Cannot schedule surgery in the past");
+      return;
+    }
+
+    const now = new Date();
+    if (selectedDate.toDateString() === now.toDateString()) {
+      const [h, m] = formData.startTime.split(":").map(Number);
+      if (h < now.getHours() || (h === now.getHours() && m < now.getMinutes())) {
+        alert("Select a future time for today's surgery");
+        return;
+      }
+    }
+
+    const endTime = calculateEndTime(formData.startTime, formData.duration);
+    const startSlot = timeToSlot(formData.startTime);
+    const endSlot = timeToSlot(endTime);
+
+    // Overlap checks (Local check before API)
+    const hasOverlap = data.surgeries.some(s => {
+      if (s.id === editingId) return false;
+      if (s.date === formData.date && s.ot !== -1) {
+        // Simple slot overlap check
+        return (startSlot < s.end_slot && endSlot > s.start_slot);
+      }
+      return false;
+    });
+
+    // Note: OT assignment is still handled by backend unless we want to manual override.
+    // For now, let's pass the date and time to the backend.
+
     const payload = {
       type: formData.type,
       patient_id: parseInt(formData.patient_id),
-      surgeon_id: -1, // Auto-allocated
+      surgeon_id: -1, 
       required_nurses: parseInt(formData.required_nurses),
       duration: parseInt(formData.duration),
       equipment: formData.equipment,
       urgency: formData.urgency,
-      priority: formData.urgency === 'Emergency' ? 1 : formData.urgency === 'Major' ? 2 : 3
+      priority: formData.urgency === 'Emergency' ? 1 : formData.urgency === 'Major' ? 2 : 3,
+      date: formData.date,
+      startTime: formData.startTime,
+      endTime: endTime,
+      start_slot: startSlot,
+      end_slot: endSlot
     };
 
     try {
@@ -135,7 +195,12 @@ const App = () => {
   };
 
   const generateReport = () => {
-    console.log("Generating Episkey HP Report...");
+    const formatDate = (dateStr) => {
+      if (!dateStr) return 'Pending';
+      const d = new Date(dateStr);
+      return d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+    };
+
     if (!data || !data.surgeries) {
       alert("No data available for report generation.");
       return;
@@ -184,18 +249,21 @@ const App = () => {
     doc.text("1. SURGERY PRIORITY LIST (AI BASED)", 14, yPos);
     yPos += 5;
 
-    const surgeryData = (data.preference_order || []).map((pref, index) => [
-      index + 1,
-      pref.patient || "Not Assigned",
-      pref.type || "Not Assigned",
-      pref.ot !== -1 ? `OT-${pref.ot}` : "Not Assigned",
-      pref.surgeon || "Not Assigned",
-      `${pref.duration} min`
-    ]);
+    const surgeryData = (data.preference_order || []).map((pref, index) => {
+      const fullSurgery = data.surgeries.find(s => s.patient === pref.patient || s.patient_id === pref.patient);
+      return [
+        index + 1,
+        pref.patient || "Not Assigned",
+        formatDate(fullSurgery?.date),
+        fullSurgery ? `${fullSurgery.startTime || formatTime(fullSurgery.start_slot)} - ${fullSurgery.endTime || formatTime(fullSurgery.end_slot)}` : "Not Assigned",
+        pref.ot !== -1 ? `OT-${pref.ot}` : "Not Assigned",
+        pref.surgeon || "Not Assigned"
+      ];
+    });
 
     autoTable(doc, {
       startY: yPos,
-      head: [['Priority', 'Patient ID', 'Type', 'OT', 'Surgeon', 'Duration']],
+      head: [['Priority', 'Patient ID', 'Date', 'Time', 'OT', 'Surgeon']],
       body: surgeryData,
       headStyles: { fillColor: [0, 51, 102], textColor: 255, fontStyle: 'bold' },
       styles: { fontSize: 9, cellPadding: 3 },
@@ -389,26 +457,35 @@ const App = () => {
           <table>
             <thead>
               <tr>
-                <th>ID</th>
                 <th>Patient</th>
-                <th>Type</th>
-                <th>Surgeon</th>
-                <th>Duration</th>
-                <th>OT</th>
+                <th>Date</th>
                 <th>Time</th>
+                <th>OT</th>
+                <th>Surgeon</th>
                 <th>Actions</th>
               </tr>
             </thead>
             <tbody>
-              {data.surgeries?.map(s => (
-                <tr key={s.id}>
-                  <td>#{s.id}</td>
-                  <td><button className="btn" style={{padding: '4px', background: 'transparent', color: 'var(--primary)', textDecoration: 'underline'}} onClick={() => { setSearchPatientId(s.patient); setActiveTab('patient_portal'); }}>PT-{s.patient || s.patient_id}</button></td>
-                  <td>{s.type ? s.type.replace(/_/g, ' ') : 'Unknown'} {s.urgency === 'Emergency' && <span className="badge priority-1">Emergency</span>}</td>
-                  <td>{s.surgeon ? s.surgeon.replace(/_/g, ' ') : 'Pending'}</td>
-                  <td><Clock size={14} style={{display: 'inline', marginRight: 4}}/>{s.duration}m</td>
+              {data.surgeries?.map(s => {
+                const isToday = s.date === new Date().toISOString().split('T')[0];
+                return (
+                  <tr key={s.id} style={{background: isToday ? 'rgba(0, 82, 204, 0.05)' : 'inherit'}}>
+                    <td>
+                      <div style={{display: 'flex', flexDirection: 'column'}}>
+                        <button className="btn" style={{padding: '0', background: 'transparent', color: 'var(--primary)', textDecoration: 'underline', textAlign: 'left'}} onClick={() => { setSearchPatientId(s.patient); setActiveTab('patient_portal'); }}>PT-{s.patient || s.patient_id}</button>
+                        {isToday && <span className="badge" style={{fontSize: '9px', background: 'var(--primary)', color: 'white', padding: '2px 4px', width: 'fit-content'}}>Today</span>}
+                        <span style={{fontSize: '11px', color: '#888'}}>{s.type?.replace(/_/g, ' ')}</span>
+                      </div>
+                    </td>
+                  <td style={{fontWeight: '500'}}>{s.date ? new Date(s.date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : 'Pending'}</td>
+                  <td>
+                    <div style={{display: 'flex', alignItems: 'center', gap: '4px'}}>
+                      <Clock size={14} color="#666" />
+                      {s.ot !== -1 ? `${s.startTime || formatTime(s.start_slot)} - ${s.endTime || formatTime(s.end_slot)}` : 'Pending'}
+                    </div>
+                  </td>
                   <td><span className={`badge ${s.ot !== -1 ? 'ot' : 'ot unassigned'}`}>{s.ot !== -1 ? `OT ${s.ot}` : 'N/A'}</span></td>
-                  <td>{s.ot !== -1 ? `${formatTime(s.start_slot)} - ${formatTime(s.end_slot)}` : 'Pending'}</td>
+                  <td>{s.surgeon ? s.surgeon.replace(/_/g, ' ') : 'Pending'}</td>
                   <td>
                     <div style={{display: 'flex', gap: '8px'}}>
                       <button className="btn" style={{padding: '6px', background: 'transparent', color: 'var(--primary)'}} onClick={() => openEditModal(s)}><Edit2 size={16} /></button>
@@ -416,7 +493,8 @@ const App = () => {
                     </div>
                   </td>
                 </tr>
-              ))}
+                );
+              })}
             </tbody>
           </table>
         </div>
@@ -627,15 +705,44 @@ const App = () => {
               <button style={{background: 'transparent', border: 'none', cursor: 'pointer'}} onClick={() => setIsModalOpen(false)}><X size={20} /></button>
             </div>
             <form onSubmit={handleSubmit} style={{display: 'flex', flexDirection: 'column', gap: '12px'}}>
-              <input style={{padding: '8px', borderRadius: '6px', border: '1px solid #ccc'}} required name="type" placeholder="Surgery Type" value={formData.type} onChange={handleInputChange} />
-              <input style={{padding: '8px', borderRadius: '6px', border: '1px solid #ccc'}} required type="number" name="patient_id" placeholder="Patient ID" value={formData.patient_id} onChange={handleInputChange} />
-              <input style={{padding: '8px', borderRadius: '6px', border: '1px solid #ccc'}} required type="number" name="duration" placeholder="Duration (mins)" value={formData.duration} onChange={handleInputChange} />
-              <select style={{padding: '8px', borderRadius: '6px', border: '1px solid #ccc'}} name="urgency" value={formData.urgency} onChange={handleInputChange}>
-                <option value="Emergency">Emergency</option>
-                <option value="Major">Major</option>
-                <option value="Minor">Minor</option>
-              </select>
-              <button type="submit" className="btn btn-primary" style={{marginTop: '10px'}}>{editingId ? 'Save Changes' : 'Add Surgery'}</button>
+              <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px'}}>
+                <div className="form-group">
+                  <label style={{fontSize: '12px', fontWeight: '700', color: '#666'}}>Surgery Type</label>
+                  <input style={{padding: '8px', width: '100%', borderRadius: '6px', border: '1px solid #ccc'}} required name="type" placeholder="e.g. Heart Surgery" value={formData.type} onChange={handleInputChange} />
+                </div>
+                <div className="form-group">
+                  <label style={{fontSize: '12px', fontWeight: '700', color: '#666'}}>Patient ID</label>
+                  <input style={{padding: '8px', width: '100%', borderRadius: '6px', border: '1px solid #ccc'}} required type="number" name="patient_id" placeholder="101" value={formData.patient_id} onChange={handleInputChange} />
+                </div>
+              </div>
+
+              <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px'}}>
+                <div className="form-group">
+                  <label style={{fontSize: '12px', fontWeight: '700', color: '#666'}}>Surgery Date</label>
+                  <input id="surgeryDate" style={{padding: '8px', width: '100%', borderRadius: '6px', border: '1px solid #ccc'}} required type="date" name="date" value={formData.date} onChange={handleInputChange} />
+                </div>
+                <div className="form-group">
+                  <label style={{fontSize: '12px', fontWeight: '700', color: '#666'}}>Start Time</label>
+                  <input id="startTime" style={{padding: '8px', width: '100%', borderRadius: '6px', border: '1px solid #ccc'}} required type="time" name="startTime" value={formData.startTime} onChange={handleInputChange} />
+                </div>
+              </div>
+
+              <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px'}}>
+                <div className="form-group">
+                  <label style={{fontSize: '12px', fontWeight: '700', color: '#666'}}>Duration (mins)</label>
+                  <input style={{padding: '8px', width: '100%', borderRadius: '6px', border: '1px solid #ccc'}} required type="number" name="duration" placeholder="60" value={formData.duration} onChange={handleInputChange} />
+                </div>
+                <div className="form-group">
+                  <label style={{fontSize: '12px', fontWeight: '700', color: '#666'}}>Urgency</label>
+                  <select style={{padding: '8px', width: '100%', borderRadius: '6px', border: '1px solid #ccc'}} name="urgency" value={formData.urgency} onChange={handleInputChange}>
+                    <option value="Emergency">Emergency</option>
+                    <option value="Major">Major</option>
+                    <option value="Minor">Minor</option>
+                  </select>
+                </div>
+              </div>
+              
+              <button type="submit" className="btn btn-primary" style={{marginTop: '10px'}}>{editingId ? 'Save Changes' : 'Schedule Surgery'}</button>
             </form>
           </div>
         </div>

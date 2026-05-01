@@ -15,7 +15,7 @@ void read_input() {
         if (strcmp(label, "SURGERIES") == 0) {
             fscanf(f, "%d", &num_surgeries);
             for (int i = 0; i < num_surgeries; i++) {
-                fscanf(f, "%d %s %s %d %d %d %d %s %d", 
+                fscanf(f, "%d %s %s %d %d %d %d %s %d %s %d %d", 
                     &surgeries[i].id, 
                     surgeries[i].type, 
                     surgeries[i].urgency,
@@ -24,10 +24,11 @@ void read_input() {
                     &surgeries[i].required_nurses, 
                     &surgeries[i].duration, 
                     surgeries[i].equipment, 
-                    &surgeries[i].priority);
+                    &surgeries[i].priority,
+                    surgeries[i].date,
+                    &surgeries[i].start_slot,
+                    &surgeries[i].end_slot);
                 surgeries[i].assigned_ot = -1;
-                surgeries[i].start_slot = -1;
-                surgeries[i].end_slot = -1;
             }
         } else if (strcmp(label, "OTS") == 0) {
             fscanf(f, "%d", &num_ots);

@@ -26,7 +26,10 @@ function generateScheduleAndGetData() {
         const typeStr = s.type ? s.type.replace(/ /g, '_') : "Unknown";
         const urgencyStr = s.urgency ? s.urgency.replace(/ /g, '_') : "Minor";
         const eqStr = s.equipment ? s.equipment.replace(/ /g, '_') : "Standard";
-        inputStr += `${s.id} ${typeStr} ${urgencyStr} ${s.patient_id} ${s.surgeon_id} ${s.required_nurses} ${s.duration} ${eqStr} ${s.priority}\n`;
+        const dateStr = s.date || "2026-05-01";
+        const startSlot = s.start_slot !== undefined ? s.start_slot : -1;
+        const endSlot = s.end_slot !== undefined ? s.end_slot : -1;
+        inputStr += `${s.id} ${typeStr} ${urgencyStr} ${s.patient_id} ${s.surgeon_id} ${s.required_nurses} ${s.duration} ${eqStr} ${s.priority} ${dateStr} ${startSlot} ${endSlot}\n`;
     });
 
     inputStr += `\nOTS ${db.ots.length}\n`;

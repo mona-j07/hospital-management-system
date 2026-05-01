@@ -21,6 +21,7 @@ typedef struct {
     int num_assigned_nurses;
     int start_slot; // 0 to MAX_SLOTS - 1 (assume 30 min slots, 0 = 00:00)
     int end_slot;
+    char date[11]; // YYYY-MM-DD
 } Surgery;
 
 typedef struct {

@@ -40,25 +40,33 @@ void sort_surgeries_by_priority(Surgery s[], int n) {
     }
 }
 
-int is_ot_available(int ot_idx, int start_slot, int needed) {
-    if (!ots[ot_idx].is_available) return 0;
-    if (start_slot + needed > MAX_SLOTS) return 0;
-    for (int i = 0; i < needed; i++) {
-        if (ots[ot_idx].schedule[start_slot + i] == 1) return 0;
+int is_ot_free(int ot_id, int start, int needed, const char* date, Surgery s[], int n) {
+    for (int i = 0; i < n; i++) {
+        if (s[i].assigned_ot == ot_id && strcmp(s[i].date, date) == 0) {
+            if (start < s[i].end_slot && (start + needed) > s[i].start_slot) return 0;
+        }
     }
     return 1;
 }
 
-int is_surgeon_available(int surg_idx, int start_slot, int needed) {
-    for (int i = 0; i < needed; i++) {
-        if (surgeons[surg_idx].schedule[start_slot + i] == 1) return 0;
+int is_surgeon_free(int surg_id, int start, int needed, const char* date, Surgery s[], int n) {
+    for (int i = 0; i < n; i++) {
+        if (s[i].surgeon_id == surg_id && strcmp(s[i].date, date) == 0) {
+            if (start < s[i].end_slot && (start + needed) > s[i].start_slot) return 0;
+        }
     }
     return 1;
 }
 
-int is_nurse_available(int nurse_idx, int start_slot, int needed) {
-    for (int i = 0; i < needed; i++) {
-        if (nurses[nurse_idx].schedule[start_slot + i] == 1) return 0;
+int is_nurse_free(int nurse_id, int start, int needed, const char* date, Surgery s[], int n) {
+    for (int i = 0; i < n; i++) {
+        if (strcmp(s[i].date, date) == 0) {
+            for (int k = 0; k < s[i].num_assigned_nurses; k++) {
+                if (s[i].assigned_nurses[k] == nurse_id) {
+                    if (start < s[i].end_slot && (start + needed) > s[i].start_slot) return 0;
+                }
+            }
+        }
     }
     return 1;
 }
@@ -67,53 +75,43 @@ void generate_schedule(Surgery s[], int n, OT ot[], int m) {
     sort_surgeries_by_priority(s, n);
 
     for (int i = 0; i < n; i++) {
-        s[i].assigned_ot = -1; // Reset assignment
-        s[i].num_assigned_nurses = 0;
-        
         int needed = slots_needed(s[i].duration);
         int scheduled = 0;
+        
+        // If manual slot is provided, try to honor it.
+        int start_search = (s[i].start_slot != -1) ? s[i].start_slot : 0;
+        int end_search = (s[i].start_slot != -1) ? s[i].start_slot : (MAX_SLOTS - needed);
 
-        for (int slot = 0; slot <= MAX_SLOTS - needed && !scheduled; slot++) {
+        for (int slot = start_search; slot <= end_search && !scheduled; slot++) {
             for (int j = 0; j < m; j++) {
-                if (is_ot_available(j, slot, needed)) {
-                    // Try to find a surgeon
-                    int found_surgeon_idx = -1;
+                if (ot[j].is_available && is_ot_free(ot[j].id, slot, needed, s[i].date, s, i)) {
+                    // Find surgeon
+                    int found_surg = -1;
                     for (int x = 0; x < num_surgeons; x++) {
-                        if (is_surgeon_available(x, slot, needed)) {
-                            found_surgeon_idx = x;
+                        if (is_surgeon_free(surgeons[x].id, slot, needed, s[i].date, s, i)) {
+                            found_surg = x;
                             break;
                         }
                     }
 
-                    // Try to find enough nurses
+                    // Find nurses
                     int found_nurses[10];
-                    int nurses_found = 0;
-                    for (int y = 0; y < num_nurses && nurses_found < s[i].required_nurses; y++) {
-                        if (is_nurse_available(y, slot, needed)) {
-                            found_nurses[nurses_found++] = y;
+                    int n_count = 0;
+                    for (int y = 0; y < num_nurses && n_count < s[i].required_nurses; y++) {
+                        if (is_nurse_free(nurses[y].id, slot, needed, s[i].date, s, i)) {
+                            found_nurses[n_count++] = y;
                         }
                     }
 
-                    if (found_surgeon_idx != -1 && nurses_found == s[i].required_nurses) {
-                        // Allocate everything
+                    if (found_surg != -1 && n_count == s[i].required_nurses) {
                         s[i].assigned_ot = ot[j].id;
                         s[i].start_slot = slot;
                         s[i].end_slot = slot + needed;
-                        s[i].surgeon_id = surgeons[found_surgeon_idx].id;
-                        s[i].num_assigned_nurses = nurses_found;
-                        
-                        for (int k = 0; k < needed; k++) ot[j].schedule[slot + k] = 1;
-
-                        for (int k = 0; k < needed; k++) surgeons[found_surgeon_idx].schedule[slot + k] = 1;
-                        surgeons[found_surgeon_idx].worked_hours += needed / 2;
-
-                        for (int k = 0; k < nurses_found; k++) {
-                            int n_idx = found_nurses[k];
-                            s[i].assigned_nurses[k] = nurses[n_idx].id;
-                            for (int z = 0; z < needed; z++) nurses[n_idx].schedule[slot + z] = 1;
-                            nurses[n_idx].worked_hours += needed / 2;
+                        s[i].surgeon_id = surgeons[found_surg].id;
+                        s[i].num_assigned_nurses = n_count;
+                        for (int k = 0; k < n_count; k++) {
+                            s[i].assigned_nurses[k] = nurses[found_nurses[k]].id;
                         }
-
                         scheduled = 1;
                         break;
                     }

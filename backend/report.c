@@ -39,7 +39,8 @@ void export_json() {
         }
         fprintf(f, "],\n");
         fprintf(f, "      \"start_slot\": %d,\n", surgeries[i].start_slot);
-        fprintf(f, "      \"end_slot\": %d\n", surgeries[i].end_slot);
+        fprintf(f, "      \"end_slot\": %d,\n", surgeries[i].end_slot);
+        fprintf(f, "      \"date\": \"%s\"\n", surgeries[i].date[0] ? surgeries[i].date : "2026-05-01");
         fprintf(f, "    }%s\n", (i == num_surgeries - 1) ? "" : ",");
     }
     fprintf(f, "  ],\n");
