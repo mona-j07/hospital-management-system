@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Activity, Users, Stethoscope, Download, AlertCircle, Clock, Plus, Edit2, Trash2, X, DollarSign, Search, User, Clipboard, Home } from 'lucide-react';
-import jsPDF from 'jspdf';
+import { jsPDF } from 'jspdf';
 import 'jspdf-autotable';
 
 const rawUrl = import.meta.env.VITE_API_URL || 'https://hospital-management-system-my4q.onrender.com/api';
@@ -134,8 +134,13 @@ const App = () => {
     return `${hours.toString().padStart(2, '0')}:${mins}`;
   };
 
-  const generatePDF = () => {
-    if (!data) return;
+  const generateReport = () => {
+    console.log("Generating Episkey HP Report...");
+    if (!data || !data.surgeries) {
+      alert("No data available for report generation.");
+      return;
+    }
+    
     const doc = new jsPDF();
     const pageWidth = doc.internal.pageSize.getWidth();
     const pageHeight = doc.internal.pageSize.getHeight();
@@ -295,7 +300,7 @@ const App = () => {
       doc.text(`Page ${i} of ${totalPages}`, pageWidth - 14, pageHeight - 10, { align: 'right' });
     }
 
-    doc.save("Episkey_Hospital_Report.pdf");
+    doc.save("Episkey_HP_Report.pdf");
   };
 
   const handlePatientSearch = (e) => {
@@ -556,7 +561,7 @@ const App = () => {
           </div>
         </div>
 
-        <button className="btn btn-primary" onClick={generatePDF}><Download size={18} /> Export Full Report</button>
+        <button className="btn btn-primary" onClick={generateReport}><Download size={18} /> Export Full Report</button>
       </nav>
 
       <div className="container">
