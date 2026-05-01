@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Activity, Users, Stethoscope, Download, AlertCircle, Clock, Plus, Edit2, Trash2, X, DollarSign, Search, User, Clipboard, Home } from 'lucide-react';
 import { jsPDF } from 'jspdf';
-import 'jspdf-autotable';
+import autoTable from 'jspdf-autotable';
 
 const rawUrl = import.meta.env.VITE_API_URL || 'https://hospital-management-system-my4q.onrender.com/api';
 const API_URL = rawUrl.endsWith('/api') ? rawUrl : `${rawUrl}/api`;
@@ -186,14 +186,14 @@ const App = () => {
 
     const surgeryData = (data.preference_order || []).map((pref, index) => [
       index + 1,
-      pref.patient || "N/A",
-      pref.type || "N/A",
+      pref.patient || "Not Assigned",
+      pref.type || "Not Assigned",
       pref.ot !== -1 ? `OT-${pref.ot}` : "Not Assigned",
       pref.surgeon || "Not Assigned",
       `${pref.duration} min`
     ]);
 
-    doc.autoTable({
+    autoTable(doc, {
       startY: yPos,
       head: [['Priority', 'Patient ID', 'Type', 'OT', 'Surgeon', 'Duration']],
       body: surgeryData,
@@ -203,7 +203,7 @@ const App = () => {
       margin: { left: 14, right: 14 }
     });
 
-    yPos = doc.lastAutoTable.finalY + 15;
+    yPos = (doc).lastAutoTable.finalY + 15;
 
     // 3. DOCTOR PAYROLL (TABLE)
     if (yPos > 240) { doc.addPage(); yPos = 20; }
@@ -224,20 +224,20 @@ const App = () => {
       const reasonSummary = reasons.map(r => `• ${r}`).join('\n');
 
       return [
-        s.name,
+        s.name || "Not Assigned",
         `${s.worked_hours}h`,
         s.surgeries_count,
         `₹${basePay.toFixed(0)}`,
         `₹${otBonus.toFixed(0)}`,
         `₹${surgeryBonus.toFixed(0)}`,
         `₹${s.salary.toFixed(0)}`,
-        reasonSummary
+        reasonSummary || "Not Assigned"
       ];
     });
 
-    doc.autoTable({
+    autoTable(doc, {
       startY: yPos,
-      head: [['Doctor', 'Hours', 'Surgeries', 'Base', 'OT Bonus', 'Surg Bonus', 'Final', 'Reason Summary']],
+      head: [['Name', 'Hours', 'Surgeries', 'Base Pay', 'Overtime Pay', 'Bonus', 'Final Pay', 'Reason']],
       body: doctorData,
       headStyles: { fillColor: [0, 51, 102], textColor: 255, fontStyle: 'bold' },
       styles: { fontSize: 8, cellPadding: 2 },
@@ -246,7 +246,7 @@ const App = () => {
       margin: { left: 14, right: 14 }
     });
 
-    yPos = doc.lastAutoTable.finalY + 15;
+    yPos = (doc).lastAutoTable.finalY + 15;
 
     // 4. NURSE PAYROLL (TABLE)
     if (yPos > 240) { doc.addPage(); yPos = 20; }
@@ -267,20 +267,20 @@ const App = () => {
       const reasonSummary = reasons.map(r => `• ${r}`).join('\n');
 
       return [
-        n.name,
+        n.name || "Not Assigned",
         `${n.worked_hours}h`,
         n.surgeries_count,
         `₹${basePay.toFixed(0)}`,
         `₹${otBonus.toFixed(0)}`,
         `₹${surgeryBonus.toFixed(0)}`,
         `₹${n.salary.toFixed(0)}`,
-        reasonSummary
+        reasonSummary || "Not Assigned"
       ];
     });
 
-    doc.autoTable({
+    autoTable(doc, {
       startY: yPos,
-      head: [['Nurse', 'Hours', 'Surgeries', 'Base', 'OT Bonus', 'Surg Bonus', 'Final', 'Reason Summary']],
+      head: [['Name', 'Hours', 'Surgeries', 'Base Pay', 'Overtime Pay', 'Bonus', 'Final Pay', 'Reason']],
       body: nurseData,
       headStyles: { fillColor: [0, 51, 102], textColor: 255, fontStyle: 'bold' },
       styles: { fontSize: 8, cellPadding: 2 },
