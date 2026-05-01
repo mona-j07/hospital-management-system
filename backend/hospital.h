@@ -74,7 +74,8 @@ void read_input();
 void generate_schedule(Surgery s[], int n, OT ot[], int m);
 int is_conflict(Surgery s, int ot_id, int slot);
 void insert_emergency(Surgery *s, int *n);
-float calculate_salary(int hours, float rate, int overtime);
+float calculate_salary(int hours, int surgeries, float rate);
+
 void export_json();
 int slots_needed(int duration_minutes);
 

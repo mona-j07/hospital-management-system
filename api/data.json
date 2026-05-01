@@ -121,75 +121,228 @@
   "nurses": [
     {
       "id": 1,
-      "name": "Ms. Lakshmi Devi",
-      "position": "OT Head Nurse",
-      "specialization": "Operation Theatre Nursing",
-      "experience": 16,
+      "name": "Ms. Poornima K",
+      "position": "OT Staff Nurse",
+      "specialization": "Instrument Handling",
+      "experience": 7,
       "max_hours": 8,
-      "rate": 200
+      "rate": 150
     },
     {
       "id": 2,
-      "name": "Ms. Farhana Begum",
-      "position": "OT Staff Nurse",
-      "specialization": "Perioperative Nursing",
-      "experience": 11,
+      "name": "Ms. Rani G",
+      "position": "Scrub Nurse",
+      "specialization": "Aseptic Techniques",
+      "experience": 12,
       "max_hours": 8,
       "rate": 150
     },
     {
       "id": 3,
-      "name": "Ms. Divya Raj",
-      "position": "Senior OT Nurse",
-      "specialization": "Surgical Assistance",
+      "name": "Ms. Sowmya M",
+      "position": "Circulating Nurse",
+      "specialization": "Patient Prep",
       "experience": 9,
-      "max_hours": 8,
-      "rate": 180
-    },
-    {
-      "id": 4,
-      "name": "Ms. Ayesha Khan",
-      "position": "OT Staff Nurse",
-      "specialization": "Scrub Nursing",
-      "experience": 8,
       "max_hours": 8,
       "rate": 150
     },
     {
-      "id": 5,
-      "name": "Ms. Revathi S",
+      "id": 4,
+      "name": "Ms. Tamilselvi B",
       "position": "OT Nurse",
-      "specialization": "Post-operative Care",
-      "experience": 6,
-      "max_hours": 8,
-      "rate": 130
-    },
-    {
-      "id": 6,
-      "name": "Ms. Keerthana P",
-      "position": "OT Nurse",
-      "specialization": "Anaesthesia Assistance",
+      "specialization": "Recovery Care",
       "experience": 5,
       "max_hours": 8,
       "rate": 130
     },
     {
-      "id": 7,
-      "name": "Ms. Jennifer M",
-      "position": "OT Coordinator Nurse",
-      "specialization": "OT Coordination",
-      "experience": 13,
+      "id": 5,
+      "name": "Ms. Uma Rani",
+      "position": "Senior OT Nurse",
+      "specialization": "Anesthesia Support",
+      "experience": 14,
+      "max_hours": 8,
+      "rate": 180
+    },
+    {
+      "id": 6,
+      "name": "Ms. Vanitha S",
+      "position": "OT Coordinator",
+      "specialization": "Scheduling Assistance",
+      "experience": 8,
       "max_hours": 8,
       "rate": 190
     },
     {
-      "id": 8,
-      "name": "Ms. Sangeetha R",
+      "id": 7,
+      "name": "Ms. Yamuna P",
       "position": "Scrub Nurse",
-      "specialization": "Sterile Field Management",
+      "specialization": "Orthopedic Surgery",
       "experience": 10,
       "max_hours": 8,
-      "rate": 160
+      "rate": 150
+    },
+    {
+      "id": 8,
+      "name": "Ms. Zareena A",
+      "position": "OT Staff Nurse",
+      "specialization": "General OT",
+      "experience": 6,
+      "max_hours": 8,
+      "rate": 150
+    },
+    {
+      "id": 9,
+      "name": "Ms. Bhuvana D",
+      "position": "Perioperative Nurse",
+      "specialization": "Cardiac OT",
+      "experience": 11,
+      "max_hours": 8,
+      "rate": 150
+    },
+    {
+      "id": 10,
+      "name": "Ms. Chitra N",
+      "position": "OT Nurse",
+      "specialization": "Neuro Surgery",
+      "experience": 7,
+      "max_hours": 8,
+      "rate": 130
+    },
+    {
+      "id": 11,
+      "name": "Ms. Deepa V",
+      "position": "Senior Scrub Nurse",
+      "specialization": "Gynecology OT",
+      "experience": 13,
+      "max_hours": 8,
+      "rate": 180
+    },
+    {
+      "id": 12,
+      "name": "Ms. Eswari T",
+      "position": "Circulating Nurse",
+      "specialization": "ENT Procedures",
+      "experience": 4,
+      "max_hours": 8,
+      "rate": 150
+    },
+    {
+      "id": 13,
+      "name": "Ms. Fathima J",
+      "position": "OT Staff Nurse",
+      "specialization": "Urology OT",
+      "experience": 9,
+      "max_hours": 8,
+      "rate": 150
+    },
+    {
+      "id": 14,
+      "name": "Ms. Geetha L",
+      "position": "Recovery Nurse",
+      "specialization": "Post-Op Monitoring",
+      "experience": 15,
+      "max_hours": 8,
+      "rate": 150
+    },
+    {
+      "id": 15,
+      "name": "Ms. Hema K",
+      "position": "OT Head Assistant",
+      "specialization": "Sterilization",
+      "experience": 12,
+      "max_hours": 8,
+      "rate": 200
+    },
+    {
+      "id": 16,
+      "name": "Ms. Indira M",
+      "position": "Scrub Nurse",
+      "specialization": "General Surgery",
+      "experience": 8,
+      "max_hours": 8,
+      "rate": 150
+    },
+    {
+      "id": 17,
+      "name": "Ms. Jayanthi R",
+      "position": "OT Nurse",
+      "specialization": "Ortho Assistance",
+      "experience": 6,
+      "max_hours": 8,
+      "rate": 130
+    },
+    {
+      "id": 18,
+      "name": "Ms. Kalpana S",
+      "position": "Circulating Nurse",
+      "specialization": "Cardio Support",
+      "experience": 10,
+      "max_hours": 8,
+      "rate": 150
+    },
+    {
+      "id": 19,
+      "name": "Ms. Lakshmi V",
+      "position": "Senior OT Nurse",
+      "specialization": "Neuro Prep",
+      "experience": 14,
+      "max_hours": 8,
+      "rate": 180
+    },
+    {
+      "id": 20,
+      "name": "Ms. Mala P",
+      "position": "OT Staff Nurse",
+      "specialization": "Gyne Recovery",
+      "experience": 5,
+      "max_hours": 8,
+      "rate": 150
+    },
+    {
+      "id": 21,
+      "name": "Ms. Nandhini G",
+      "position": "Perioperative Nurse",
+      "specialization": "ENT OT",
+      "experience": 11,
+      "max_hours": 8,
+      "rate": 150
+    },
+    {
+      "id": 22,
+      "name": "Ms. Omana K",
+      "position": "Scrub Nurse",
+      "specialization": "Urology",
+      "experience": 7,
+      "max_hours": 8,
+      "rate": 150
+    },
+    {
+      "id": 23,
+      "name": "Ms. Padma B",
+      "position": "OT Coordinator",
+      "specialization": "Scheduling",
+      "experience": 9,
+      "max_hours": 8,
+      "rate": 190
+    },
+    {
+      "id": 24,
+      "name": "Ms. Qamar S",
+      "position": "Recovery Nurse",
+      "specialization": "General Recovery",
+      "experience": 13,
+      "max_hours": 8,
+      "rate": 150
+    },
+    {
+      "id": 25,
+      "name": "Ms. Radha N",
+      "position": "OT Nurse",
+      "specialization": "Multi-Specialty",
+      "experience": 8,
+      "max_hours": 8,
+      "rate": 130
     }
   ]
 }

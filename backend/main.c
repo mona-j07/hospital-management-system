@@ -24,13 +24,8 @@ int main() {
     // Generate schedule
     generate_schedule(surgeries, num_surgeries, ots, num_ots);
     
-    // Calculate payroll
-    for (int i = 0; i < num_surgeons; i++) {
-        calculate_salary(surgeons[i].worked_hours, surgeons[i].rate, 0); 
-    }
-    for (int i = 0; i < num_nurses; i++) {
-        calculate_salary(nurses[i].worked_hours, nurses[i].rate, 0);
-    }
+    // Calculate payroll (handled directly in export_json now, or we can just ignore these calls)
+    // as export_json calculates the values properly for output.
     
     // Output JSON for frontend
     export_json();

@@ -235,6 +235,17 @@ tr:hover {
   color: var(--primary);
 }
 
+/* Highlights */
+.highlight-overtime {
+  color: var(--warning);
+  font-weight: 700;
+}
+
+.highlight-bonus {
+  color: var(--success);
+  font-weight: 700;
+}
+
 /* Animations */
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(10px); }
