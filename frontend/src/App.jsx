@@ -494,8 +494,9 @@ const App = () => {
               </span>
             </div>
             <div style={{textAlign: 'right'}}>
-              <div style={{fontWeight: '700'}}>{patientDetails.type}</div>
-              <div style={{color: '#666'}}>{patientDetails.ot !== -1 ? `OT ${patientDetails.ot}` : 'Unassigned'}</div>
+              <div style={{fontSize: '0.8rem', color: '#888', textTransform: 'uppercase', fontWeight: '700'}}>Surgery Name</div>
+              <div style={{fontWeight: '700', fontSize: '1.2rem', color: 'var(--primary)'}}>{patientDetails.type ? patientDetails.type.replace(/_/g, ' ') : 'N/A'}</div>
+              <div style={{color: '#666', marginTop: '4px'}}>{patientDetails.ot !== -1 ? `OT ${patientDetails.ot}` : 'Unassigned'}</div>
             </div>
           </div>
 
