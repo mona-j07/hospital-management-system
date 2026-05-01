@@ -1,6 +1,6 @@
-# 🏥 Hospital OT Scheduling Web System
+# 🏥 Episkey HP - Hospital OT Scheduling System
 
-A comprehensive, full-stack Hospital Management and OT Scheduling System built with a **React** frontend, a **Node.js** API server, and an intelligent **C-based AI Scheduling Engine**.
+A comprehensive, full-stack **Episkey HP** Hospital Management and OT Scheduling System built with a **React** frontend, a **Node.js** API server, and an intelligent **C-based AI Scheduling Engine**.
 
 ## 🚀 Features
 

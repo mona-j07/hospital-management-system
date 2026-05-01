@@ -342,7 +342,7 @@ const App = () => {
   };
 
   if (loading) {
-    return <div className="loading" style={{textAlign: 'center', marginTop: '20vh', fontSize: '24px', color: '#0052cc'}}>Loading MedCore Data...</div>;
+    return <div className="loading" style={{textAlign: 'center', marginTop: '20vh', fontSize: '24px', color: '#0052cc'}}>Loading Episkey HP Data...</div>;
   }
   
   if (!data || data.error) {
