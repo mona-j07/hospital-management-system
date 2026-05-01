@@ -140,12 +140,12 @@ const App = () => {
     const pageWidth = doc.internal.pageSize.getWidth();
     const pageHeight = doc.internal.pageSize.getHeight();
     
-    // Header Section
+    // 1. HEADER SECTION
+    // Add Logo
     try {
-      // Add Logo (if available in public/logo.png)
       doc.addImage('/logo.png', 'PNG', 14, 10, 30, 15);
     } catch (e) {
-      console.warn("Logo not found for PDF");
+      console.warn("Logo not found");
     }
 
     doc.setFontSize(22);
@@ -153,173 +153,144 @@ const App = () => {
     doc.setFont("helvetica", "bold");
     doc.text("Episkey HP", pageWidth / 2, 20, { align: 'center' });
     
-    doc.setFontSize(16);
-    doc.text("Hospital Operation Report", pageWidth / 2, 30, { align: 'center' });
-    
-    doc.setFontSize(10);
+    doc.setFontSize(12);
     doc.setFont("helvetica", "normal");
-    doc.setTextColor(100);
-    doc.text(`Generated on: ${new Date().toLocaleString()}`, pageWidth - 14, 38, { align: 'right' });
+    doc.text("Hospital Management System", pageWidth / 2, 28, { align: 'center' });
     
     doc.setDrawColor(0, 51, 102);
     doc.setLineWidth(0.5);
-    doc.line(14, 42, pageWidth - 14, 42);
+    doc.line(14, 32, pageWidth - 14, 32);
+    
+    doc.setFontSize(16);
+    doc.setFont("helvetica", "bold");
+    doc.text("Hospital Operation Report", pageWidth / 2, 42, { align: 'center' });
+    
+    doc.setFontSize(9);
+    doc.setFont("helvetica", "normal");
+    doc.setTextColor(100);
+    doc.text(`Generated on: ${new Date().toLocaleString()}`, pageWidth - 14, 48, { align: 'right' });
 
     let yPos = 55;
 
-    // 1. AI Surgery Priority List
+    // 2. SURGERY PRIORITY LIST (TABLE)
     doc.setFontSize(14);
     doc.setTextColor(0, 51, 102);
     doc.setFont("helvetica", "bold");
-    doc.text("1. AI-BASED SURGERY PRIORITY LIST", 14, yPos);
-    yPos += 10;
+    doc.text("1. SURGERY PRIORITY LIST (AI BASED)", 14, yPos);
+    yPos += 5;
 
-    const sortedSurgeries = [...(data.preference_order || [])];
-    
-    if (sortedSurgeries.length > 0) {
-      sortedSurgeries.forEach((pref, index) => {
-        if (yPos > 260) { doc.addPage(); yPos = 20; }
-        
-        doc.setFontSize(11);
-        doc.setTextColor(0);
-        doc.setFont("helvetica", "bold");
-        doc.text(`${index + 1}. Patient ID: ${pref.patient}`, 14, yPos);
-        yPos += 6;
-        
-        doc.setFont("helvetica", "normal");
-        doc.setFontSize(10);
-        const details = [
-          `Surgery Type: ${pref.type}`,
-          `OT Assigned: ${pref.ot !== -1 ? 'OT-' + pref.ot : 'Pending'}`,
-          `Surgeon: ${pref.surgeon || 'Auto-Allocated'}`,
-          `Duration: ${pref.duration} minutes`
-        ];
-        
-        details.forEach(line => {
-          doc.text(`   ${line}`, 14, yPos);
-          yPos += 5;
-        });
-        
-        doc.setFont("helvetica", "italic");
-        doc.setTextColor(100);
-        doc.text(`   Reason: ${pref.reason}`, 14, yPos);
-        yPos += 10;
-      });
-    } else {
-      doc.text("No surgeries scheduled.", 14, yPos);
-      yPos += 10;
-    }
+    const surgeryData = (data.preference_order || []).map((pref, index) => [
+      index + 1,
+      pref.patient || "N/A",
+      pref.type || "N/A",
+      pref.ot !== -1 ? `OT-${pref.ot}` : "Not Assigned",
+      pref.surgeon || "Not Assigned",
+      `${pref.duration} min`
+    ]);
 
-    // 2. Doctor Payroll Report
+    doc.autoTable({
+      startY: yPos,
+      head: [['Priority', 'Patient ID', 'Type', 'OT', 'Surgeon', 'Duration']],
+      body: surgeryData,
+      headStyles: { fillColor: [0, 51, 102], textColor: 255, fontStyle: 'bold' },
+      styles: { fontSize: 9, cellPadding: 3 },
+      alternateRowStyles: { fillColor: [245, 245, 245] },
+      margin: { left: 14, right: 14 }
+    });
+
+    yPos = doc.lastAutoTable.finalY + 15;
+
+    // 3. DOCTOR PAYROLL (TABLE)
     if (yPos > 240) { doc.addPage(); yPos = 20; }
-    yPos += 10;
     doc.setFontSize(14);
     doc.setTextColor(0, 51, 102);
     doc.setFont("helvetica", "bold");
     doc.text("2. DOCTOR PAYROLL REPORT", 14, yPos);
-    yPos += 10;
+    yPos += 5;
 
-    data.surgeons?.forEach(s => {
-      if (yPos > 240) { doc.addPage(); yPos = 20; }
-      
-      doc.setFontSize(11);
-      doc.setTextColor(0);
-      doc.setFont("helvetica", "bold");
-      doc.text(`Doctor: ${s.name}`, 14, yPos);
-      yPos += 6;
-
-      doc.setFont("helvetica", "normal");
-      doc.setFontSize(10);
-      
+    const doctorsWithWork = (data.surgeons || []).filter(s => s.worked_hours > 0 || s.surgeries_count > 0);
+    const doctorData = doctorsWithWork.map(s => {
       const rate = 1000 + (s.experience * 50);
       const otBonus = s.overtime_hours * rate * 1.5;
       const surgeryBonus = (s.bonus_applied === "true" || s.bonus_applied === true ? 2000 : 0);
       const basePay = s.salary - otBonus - surgeryBonus;
+      
+      const reasons = s.payroll_reason ? s.payroll_reason.split(' | ') : [];
+      const reasonSummary = reasons.map(r => `• ${r}`).join('\n');
 
-      const rows = [
-        `Total Hours: ${s.worked_hours}`,
-        `Surgeries Handled: ${s.surgeries_count}`,
-        `Base Salary: ₹${basePay.toFixed(0)}`,
-        `Overtime Bonus: ₹${otBonus.toFixed(0)}`,
-        `Surgery Bonus: ₹${surgeryBonus.toFixed(0)}`,
-        `Final Salary: ₹${s.salary.toFixed(0)}`
+      return [
+        s.name,
+        `${s.worked_hours}h`,
+        s.surgeries_count,
+        `₹${basePay.toFixed(0)}`,
+        `₹${otBonus.toFixed(0)}`,
+        `₹${surgeryBonus.toFixed(0)}`,
+        `₹${s.salary.toFixed(0)}`,
+        reasonSummary
       ];
-
-      rows.forEach(r => {
-        doc.text(`   ${r}`, 14, yPos);
-        yPos += 5;
-      });
-
-      doc.setFont("helvetica", "bold");
-      doc.text("   Reason:", 14, yPos);
-      yPos += 5;
-      doc.setFont("helvetica", "normal");
-      const reasons = s.payroll_reason.split(' | ');
-      reasons.forEach(res => {
-        doc.text(`   - ${res}`, 14, yPos);
-        yPos += 5;
-      });
-      yPos += 5;
     });
 
-    // 3. Nurse Payroll Report
+    doc.autoTable({
+      startY: yPos,
+      head: [['Doctor', 'Hours', 'Surgeries', 'Base', 'OT Bonus', 'Surg Bonus', 'Final', 'Reason Summary']],
+      body: doctorData,
+      headStyles: { fillColor: [0, 51, 102], textColor: 255, fontStyle: 'bold' },
+      styles: { fontSize: 8, cellPadding: 2 },
+      columnStyles: { 7: { cellWidth: 40 } },
+      alternateRowStyles: { fillColor: [245, 245, 245] },
+      margin: { left: 14, right: 14 }
+    });
+
+    yPos = doc.lastAutoTable.finalY + 15;
+
+    // 4. NURSE PAYROLL (TABLE)
     if (yPos > 240) { doc.addPage(); yPos = 20; }
-    yPos += 10;
     doc.setFontSize(14);
     doc.setTextColor(0, 51, 102);
     doc.setFont("helvetica", "bold");
     doc.text("3. NURSE PAYROLL REPORT", 14, yPos);
-    yPos += 10;
+    yPos += 5;
 
-    data.nurses?.forEach(n => {
-      if (yPos > 240) { doc.addPage(); yPos = 20; }
-      
-      doc.setFontSize(11);
-      doc.setTextColor(0);
-      doc.setFont("helvetica", "bold");
-      doc.text(`Nurse: ${n.name}`, 14, yPos);
-      yPos += 6;
-
-      doc.setFont("helvetica", "normal");
-      doc.setFontSize(10);
-
+    const nursesWithWork = (data.nurses || []).filter(n => n.worked_hours > 0 || n.surgeries_count > 0);
+    const nurseData = nursesWithWork.map(n => {
       const rate = 200 + (n.experience * 20);
       const otBonus = n.overtime_hours * rate * 1.5;
       const surgeryBonus = (n.bonus_applied === "true" || n.bonus_applied === true ? 800 : 0);
       const basePay = n.salary - otBonus - surgeryBonus;
+      
+      const reasons = n.payroll_reason ? n.payroll_reason.split(' | ') : [];
+      const reasonSummary = reasons.map(r => `• ${r}`).join('\n');
 
-      const rows = [
-        `Total Hours: ${n.worked_hours}`,
-        `Surgeries Assisted: ${n.surgeries_count}`,
-        `Base Salary: ₹${basePay.toFixed(0)}`,
-        `Overtime Bonus: ₹${otBonus.toFixed(0)}`,
-        `Surgery Bonus: ₹${surgeryBonus.toFixed(0)}`,
-        `Final Salary: ₹${n.salary.toFixed(0)}`
+      return [
+        n.name,
+        `${n.worked_hours}h`,
+        n.surgeries_count,
+        `₹${basePay.toFixed(0)}`,
+        `₹${otBonus.toFixed(0)}`,
+        `₹${surgeryBonus.toFixed(0)}`,
+        `₹${n.salary.toFixed(0)}`,
+        reasonSummary
       ];
-
-      rows.forEach(r => {
-        doc.text(`   ${r}`, 14, yPos);
-        yPos += 5;
-      });
-
-      doc.setFont("helvetica", "bold");
-      doc.text("   Reason:", 14, yPos);
-      yPos += 5;
-      doc.setFont("helvetica", "normal");
-      const reasons = n.payroll_reason.split(' | ');
-      reasons.forEach(res => {
-        doc.text(`   - ${res}`, 14, yPos);
-        yPos += 5;
-      });
-      yPos += 5;
     });
 
-    // Footer & Page Numbers
+    doc.autoTable({
+      startY: yPos,
+      head: [['Nurse', 'Hours', 'Surgeries', 'Base', 'OT Bonus', 'Surg Bonus', 'Final', 'Reason Summary']],
+      body: nurseData,
+      headStyles: { fillColor: [0, 51, 102], textColor: 255, fontStyle: 'bold' },
+      styles: { fontSize: 8, cellPadding: 2 },
+      columnStyles: { 7: { cellWidth: 40 } },
+      alternateRowStyles: { fillColor: [245, 245, 245] },
+      margin: { left: 14, right: 14 }
+    });
+
+    // 5. FOOTER
     const totalPages = doc.internal.getNumberOfPages();
     for (let i = 1; i <= totalPages; i++) {
       doc.setPage(i);
       doc.setFontSize(8);
       doc.setTextColor(150);
+      doc.text("-----------------------------------------------------------------------------------------------------------------------------------------------------------------", 14, pageHeight - 15);
       doc.text("Generated by Episkey HP System", 14, pageHeight - 10);
       doc.text(`Page ${i} of ${totalPages}`, pageWidth - 14, pageHeight - 10, { align: 'right' });
     }
